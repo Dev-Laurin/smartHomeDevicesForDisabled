@@ -1,36 +1,25 @@
+{% extends "layout.html" %}
 {% block main %}
 <div class="container">
 	<div class="row">
 		<p>Let us help you smartify your home!</p> 
-		<p>Please select what you need help with.</p> 
+		<p>Please select your disabilities from the list below. </p> 
 
-		<div class="form-check">
-		  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-		  <label class="form-check-label" for="defaultCheck1">
-		    Opening Doors
-		  </label>
-		</div>
-		<div class="form-check">
-		  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-		  <label class="form-check-label" for="defaultCheck1">
-		    Feeding / Providing Water for Pets
-		  </label>
-		</div>
-		<div class="form-check">
-		  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-		  <label class="form-check-label" for="defaultCheck1">
-		    Hygiene 
-		  </label>
-		</div>
-		
-
+		<form action="/listDevices" method="post"> 
+			<div class="form-group"> 
+				{% for d in disCat %}
+				<div class="form-check">
+				  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+				  <label class="form-check-label" for="defaultCheck1">
+				    {{d}}
+				  </label>
+				</div>
+				{% endfor %}
+			</div> 
+			<button type="submit" class="btn btn-primary">Submit</button> 
+		</form> 
 
 	</div>
-
-
-
 </div>
-
-
 
 {% endblock %}
