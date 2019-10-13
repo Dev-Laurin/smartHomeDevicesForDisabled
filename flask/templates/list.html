@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block main %}
+<div class="container">
+	<div class="row">
+		<h1>Smart Devices we selected for you!</h1> 
+	</div> 
+	{% for d in devices %}
+	<div> 
+	    <div class="card mb-3" style="max-width: 1080px;">
+		  <div class="row no-gutters">
+		    <div class="col-md-4">
+		      <img src="..." class="card-img" alt="...">
+		    </div>
+		    <div class="col-md-8">
+		      <div class="card-body">
+		        <h5 class="card-title">{{d}}</h5>
+		        <p class="card-text">
+
+			        <label>Description</label>
+			        <p>{{d.description}}</p>
+			        <label>Price</label> 
+			        <p>{{d.price}}</p> 
+			        <label>Recurring Price</label> 
+			        <p>{{d.recurring_price}} {{d.payment_occurence_id}}</p>
+
+		        </p>
+		        <p class="card-text"><small class="text-muted"><a href="{{d.link}}">{{d.link}}</a></small></p>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</div> 
+	{% endfor %}
+
+	</div>
+</div>
+
+{% endblock %}

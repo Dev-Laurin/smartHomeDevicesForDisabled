@@ -2,14 +2,17 @@
 {% block main %}
 <div class="container">
 	<div class="row">
-		<p>Let us help you smartify your home!</p> 
-		<p>Please select your disabilities from the list below. </p> 
-
+		<h1>Let us help you smartify your home!</h1> 
+	</div> 
+	<div class="row">
+		<h2> Please select your impairment(s) from the list below. </h2>
+	</div>
+	<div>
 		<form action="/listDevices" method="post"> 
 			<div class="form-group"> 
 				{% for d in disCat %}
 				<div class="form-check">
-				  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+				  <input class="form-check-input" type="checkbox" value="{{d}}" id="defaultCheck1" name="{{d}}">
 				  <label class="form-check-label" for="defaultCheck1">
 				    {{d}}
 				  </label>
