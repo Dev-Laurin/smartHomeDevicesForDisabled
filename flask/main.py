@@ -120,18 +120,19 @@ def main(name=None):
 
 @app.route('/listDevices', methods=["GET", "POST"])
 def list(name=None):
-	devices = []
+	devices = Device.query.join(disabilitycategory, 
+			paymentoccurence, devicecategory).all()
 	if request.method == 'POST':
 	#find all the compatible devices
-		for dis in request.form.getlist('disability'):
+		devices = []
+		for dis in request.form:
 			disability = disabilitycategory.query.filter_by(name=dis).first()
-			ds = Device.query.with_parent(disability).filter_by(disability_category_id=disability.id).all()
-			
+			ds = Device.query.join(disabilitycategory, 
+				paymentoccurence, 
+				devicecategory).filter_by(id=disability.id).all()
 			for d in ds:
+				print(d)
 				devices.append(d)
-	if len(devices) == 0: 
-		devices = Device.query.all()
-
 	return render_template('list.html', devices=devices)
 
 @app.route('/createDevice', methods=["GET", "POST"])

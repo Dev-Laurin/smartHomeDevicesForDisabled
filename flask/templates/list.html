@@ -9,19 +9,44 @@
 	    <div class="card mb-3" style="max-width: 1080px;">
 		  <div class="row no-gutters">
 		    <div class="col-md-4">
-		      <img src="..." class="card-img" alt="...">
+
+		    <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
 		    </div>
 		    <div class="col-md-8">
 		      <div class="card-body">
 		        <h5 class="card-title">{{d}}</h5>
 		        <p class="card-text">
 
-			        <label>Description</label>
-			        <p>{{d.description}}</p>
-			        <label>Price</label> 
-			        <p>{{d.price}}</p> 
-			        <label>Recurring Price</label> 
-			        <p>{{d.recurring_price}} {{d.payment_occurence_id}}</p>
+		        	<p>
+			        	<label><b>Disability Targeted: </b></label> 
+				        {{d.disabilitycategory}}
+			        </p>
+			        <label><b>Narrative / Use Description</b></label>
+			        <p>{{d.narrative}}</p>
+			        <p> 
+			        	<label><b>Relevance Rating: </b></label> 
+			        	{{d.relevance_rating}}
+			        </p> 
+			        <p> 
+			        	<label><b>Price: </b></label> 
+			        	{{d.price}}
+			        </p> 
+
+			        <p> 
+				        <label><b>Recurring Price: </b></label> 
+				        {{d.recurring_price}} {{d.paymentoccurence}}
+			        </p>
+
+			        <p> 
+				        <label><b> Device Category: </b></label> 
+				        {{d.devicecategory}}
+				    </p> 
+				    <p>
+			        	<label><b>Device Rating: </b></label> 
+			        	{{d.effectiveness_rating}}
+			        </p> 
+			        <label><b>Device Description</b></label> 
+			        <p>{{d.description}}</p> 
 
 		        </p>
 		        <p class="card-text"><small class="text-muted"><a href="{{d.link}}">{{d.link}}</a></small></p>
