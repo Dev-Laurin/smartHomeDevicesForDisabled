@@ -127,9 +127,11 @@ def list(name=None):
 		devices = []
 		for dis in request.form:
 			disability = disabilitycategory.query.filter_by(name=dis).first()
+			print(disability.name)
+			print(disability.id)
 			ds = Device.query.join(disabilitycategory, 
 				paymentoccurence, 
-				devicecategory).filter_by(id=disability.id).all()
+				devicecategory).filter(disabilitycategory.id==disability.id).all()
 			for d in ds:
 				print(d)
 				devices.append(d)

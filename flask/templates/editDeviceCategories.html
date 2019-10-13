@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block main %}
+<div class="container">
+	<div class="row">
+		<h1>Let us help you smartify your home!</h1> 
+	</div> 
+	<div class="row">
+		<h2> Please select your impairment(s) from the list below. </h2>
+	</div>
+	<div>
+		<form action="/editDeviceCategories" method="post"> 
+			<div class="form-group"> 
+				{% for c in categories %}
+					
+				{% endfor %}
+			</div> 
+			<button type="submit" class="btn btn-primary">Submit</button> 
+		</form> 
+
+	</div>
+</div>
+
+{% endblock %}
