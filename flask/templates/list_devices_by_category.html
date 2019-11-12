@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block main %}
+<div class="container">
+	<br> 
+	<h1>{{category}}</h1> 
+	<br> 
+	{% set index = namespace(foo=0) %}
+	{% set rows = (devices|length)//3 + 1 %}
+	{% for row in range(rows) %}
+	<div class="row"> 
+		{% for col in range(3) %}
+		{% if devices[index.foo] %}
+	    <div class="col">
+	    	<div class="card" style="width: 18rem;">
+			  <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
+			  <div class="card-body">
+			  	<p class="card-title">{{devices[index.foo].name}}</p>
+			    <p class="card-text">
+			    	<label><b>Device Rating: </b></label> 
+		        	{{devices[index.foo].effectiveness_rating}}
+		        	<br> 
+		        	<label><b>Price: </b></label> 
+		        	${{'%0.2f' % devices[index.foo].price}}
+		        </p>
+			  </div>
+			</div>
+	    </div>
+	    {% set index.foo = index.foo + 1 %}
+	    {% endif %}
+	    {% endfor %}
+	</div>
+	{% endfor %}
+</div>
+
+{% endblock %}

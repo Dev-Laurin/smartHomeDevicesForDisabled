@@ -1,63 +1,65 @@
 {% extends "layout.html" %}
 {% block main %}
 <div class="container">
+	<br> 
 	<div class="row">
-		<h1>Smart Devices we selected for you!</h1> 
+		<div class="col">
+			<h1>Choose Device Input(s)</h1>
+		</div>  
 	</div> 
-	{% for d in devices %}
-	<div> 
-	    <div class="card mb-3" style="max-width: 1080px;">
-		  <div class="row no-gutters">
-		    <div class="col-md-4">
-
-		    <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
-		    </div>
-		    <div class="col-md-8">
-		      <div class="card-body">
-		        <h5 class="card-title">{{d}}</h5>
-		        <p class="card-text">
-
-		        	<p>
-			        	<label><b>Disability Targeted: </b></label> 
-				        {{d.disabilitycategory}}
-			        </p>
-			        <label><b>Narrative / Use Description</b></label>
-			        <p>{{d.narrative}}</p>
-			        <p> 
-			        	<label><b>Relevance Rating: </b></label> 
-			        	{{d.relevance_rating}}
-			        </p> 
-			        <p> 
-			        	<label><b>Price: </b></label> 
-			        	{{d.price}}
-			        </p> 
-
-			        <p> 
-				        <label><b>Recurring Price: </b></label> 
-				        {{d.recurring_price}} {{d.paymentoccurence}}
-			        </p>
-
-			        <p> 
-				        <label><b> Device Category: </b></label> 
-				        {{d.devicecategory}}
-				    </p> 
-				    <p>
-			        	<label><b>Device Rating: </b></label> 
-			        	{{d.effectiveness_rating}}
-			        </p> 
-			        <label><b>Device Description</b></label> 
-			        <p>{{d.description}}</p> 
-
-		        </p>
-		        <p class="card-text"><small class="text-muted"><a href="{{d.link}}">{{d.link}}</a></small></p>
-		      </div>
-		    </div>
-		  </div>
+	<form action="/" method="post"> 
+		{% for category in categories %}
+		<div class="form-check-inline">
+		  <input class="form-check-input" type="checkbox" value="{{category}}" name="inputCat[]" id="{{category}}">
+		  <label class="form-check-label" for="{{category}}">
+		    {{category}}
+		  </label>
 		</div>
+		{% endfor %}
+		<button type="submit" class="btn btn-primary">Submit</button> 
+	</form> 
+	<br> 
+	<div class="row">
+		<div class="col"> 
+			<h2>Expand a category below</h2> 
+		</div> 
 	</div> 
-	{% endfor %}
-
+	{% set index = namespace(foo=0) %}
+	{% set rows = (homecategories|length)//3 + 1 %}
+	{% for row in range(rows) %}
+	<div class="row"> 
+		{% for col in range(3) %}
+		{% if homecategories[index.foo] %}
+	    <div class="col">
+	    	<form action="/showDevices" id="{{homecategories[index.foo].name}}_list" method="post">
+	    		<input style="display: none;" name="homecategory" value="{{homecategories[index.foo].name}}"/> 
+	    		{% for category in categories %}
+				<input style="display: none;" type="checkbox" value="{{category}}" name="inputCat[]" id="{{category}}">
+				{% endfor %}
+				<a href="#" type="submit" onclick="document.getElementById('{{homecategories[index.foo].name}}_list').submit()" class="custom-card">
+					<div class="card" style="width: 18rem;">
+					  <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+					  <svg class="bd-placeholder-img card-img-top" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
+					  <div class="card-img-overlay align-middle">
+					    <center><h5 class="card-title align-middle text-light">{{homecategories[index.foo].name}}</h5></center>
+					  </div>
+					</div>
+				</a> 
+	    	</form>
+	    	
+	    	
+	    	
+	    </div>
+	    {% set index.foo = index.foo + 1 %}
+	    {% endif %}
+	    {% endfor %}
 	</div>
+	{% endfor %}
 </div>
+<script>
+	function beforeSubmit(){
+		cat = document.getElementById('')
+	}
+</script>
 
 {% endblock %}

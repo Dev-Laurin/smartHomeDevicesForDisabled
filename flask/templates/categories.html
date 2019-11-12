@@ -2,17 +2,19 @@
 {% block main %}
 <div class="container">
 	<div class="row">
-		<h1>Let us help you smartify your home!</h1> 
+		<h1>Add/Delete/Edit the Device Categories</h1> 
 	</div> 
-	<div class="row">
-		<h2> Please select your impairment(s) from the list below. </h2>
-	</div>
 	<div>
 		<form action="/editDeviceCategories" method="post"> 
 			<div class="form-group"> 
-				{% for c in categories %}
-					
+				<ul class="list-group">
+				{% for c in deviceCat %}
+				  <li class="list-group-item d-flex justify-content-between align-items-center">
+				    {{c}}
+				    <span class="badge badge-primary badge-pill">14</span>
+				  </li>
 				{% endfor %}
+				</ul>
 			</div> 
 			<button type="submit" class="btn btn-primary">Submit</button> 
 		</form> 
