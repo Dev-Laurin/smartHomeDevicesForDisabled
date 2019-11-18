@@ -203,6 +203,15 @@ def showDeviceOnCategory(name=None):
 	return render_template('list_devices_by_category.html', 
 		devices=devices, category=homeCat.name)
 
+@app.route('/getDevice/<id>')
+def getDevice(id):
+	try: 
+		device = Device.query.get(id)
+	except Exception as e: 
+		print(e)
+
+	return render_template('item_details.html', device=device)
+
 @app.route('/editCategories')
 def editCategories(name=None):
 	deviceCat = devicecategory.query.join(Device).filter(Device.category_id==devicecategory.id).all()

@@ -14,26 +14,26 @@
 		<div class="col-md-8">
         	<div class="row">
         		<div class="col-md-6 col-lg-6">
-        			<label><b>Narrative / Use Description</b><br>{{d.narrative}}</label>
+        			<label><b>Narrative / Use Description</b><br>{{device.narrative}}</label>
 	        		<br> 
 	        		<label><b>Price: </b></label> 
-		        	{{'%0.2f' % d.price}}
+		        	{{'%0.2f' % device.price}}
 		        	
 		        	<label><b>Recurring Price: </b></label> 
-			        {{'%0.2f' % d.recurring_price}} {{d.paymentoccurence}}
+			        {{'%0.2f' % device.recurring_price}} {{device.paymentoccurence}}
 	        	</div> 
 	        	<div class="col-md-6 col-lg-6">
         			<label><b> Device Category: </b></label> 
-			        {{d.devicecategory}}
+			        {{device.devicecategory}}
 			        <br>
 			   
 		        	<label><b>Device Rating: </b></label> 
-		        	{{d.effectiveness_rating}}
+		        	{{device.effectiveness_rating}}
 		        	<br> 
 		       
-			        <label><b>Device Description: </b><br>{{d.description}}</label> 
+			        <label><b>Device Description: </b><br>{{device.description}}</label> 
 			        <br> 
-			        <label><b>Link: </b><a target="_blank" href="{{d.link}}">Link to Purchase</a></label>
+			        <label><b>Link: </b><a target="_blank" href="{{device.link}}">Link to Purchase</a></label>
 	        	</div> 
         	</div> 
         </div> 

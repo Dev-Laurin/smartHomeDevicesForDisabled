@@ -11,7 +11,7 @@
 		{% for col in range(3) %}
 		{% if devices[index.foo] %}
 	    <div class="col">
-	    	<div class="card" style="width: 18rem;">
+	    	<a href="/getDevice/{{devices[index.foo].id}}" class="card" style="width: 18rem;">
 			  <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
 			  <div class="card-body">
 			  	<p class="card-title">{{devices[index.foo].name}}</p>
@@ -26,7 +26,7 @@
 		        	{{devices[index.foo].devicecategory}}
 		        </p>
 			  </div>
-			</div>
+			</a>
 	    </div>
 	    {% set index.foo = index.foo + 1 %}
 	    {% endif %}
