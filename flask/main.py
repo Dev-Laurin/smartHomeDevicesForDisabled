@@ -1,7 +1,7 @@
 from flask import (Flask, render_template, request, 
 	url_for, redirect, flash)
 from flask_sqlalchemy import SQLAlchemy 
-from forms import CreateDeviceForm
+#from forms import CreateDeviceForm
 
 #Config 
 app = Flask(__name__)
@@ -64,7 +64,7 @@ class Device(db.Model):
 	recurring_price = db.Column(db.Float)
 	payment_occurence_id = db.Column(db.Integer, 
 		db.ForeignKey('paymentoccurence.id'))
-	link = db.Column(db.String(), nullable=False)
+	link = db.Column(db.String(500), nullable=False)
 
 	category_id = db.Column(db.Integer, 
 		db.ForeignKey('devicecategory.id'),
@@ -72,7 +72,7 @@ class Device(db.Model):
 	homecategories = db.relationship('homecategory', 
 		secondary=homecategories, lazy='subquery',
 		backref=db.backref('devices', lazy=True))
-	effectiveness_rating = db.Column(db.Integer, nullable=False)
+	rating = db.Column(db.Numeric(10,2), nullable=False)
 	narrative = db.Column(db.String(500))
 
 #initialize database -- delete when in production!!!
@@ -106,7 +106,7 @@ device = Device(name="Philips Hue White and Color Wireless Ambiance Starter Kit 
 	description="Choose between millions of colors and shades of white light to light your home, wirelessly control with your smartphone or tablet, and sync your light immersively to music, games, and movies. ",
 	price=199.95, recurring_price=0.00, payment_occurence_id=po.id, 
 	link="http://www.amazon.com/gp/product/B014H2P4KW?redirect=true&ref_=s9_acss_bw_cg_ESHPhili_4a1",
-	category_id=dc.id, effectiveness_rating=3, narrative="Gives you the ability to activate lights with voice commands.")
+	category_id=dc.id, rating=3, narrative="Gives you the ability to activate lights with voice commands.")
 device.homecategories.append(hc)
 db.session.add(device)
 db.session.commit()
@@ -114,7 +114,7 @@ device = Device(name="Brilliant One Switch Panel",
 	description="Transform your house or apartment into an easy-to-use smart home with the award-winning Brilliant Smart Home Control and all-in-one mobile app. Instantly gain control over all your smart home products via a single app and display that simply installs in place of any light switch. No more hubs, ugly wires, countertop clutter, or switching multiple apps.",
 	price=299.99, recurring_price=0.00, payment_occurence_id=po.id, 
 	link="https://www.brilliant.tech/products/brilliant-control-two-switch-smart-lighting-smart-home-control?variant=white",
-	category_id=dct.id, effectiveness_rating=4.7, narrative="Gives you the ability to activate lights via a phone app.")
+	category_id=dct.id, rating=4.7, narrative="Gives you the ability to activate lights via a phone app.")
 device.homecategories.append(hc)
 db.session.add(device)
 db.session.commit()
@@ -122,11 +122,36 @@ device = Device(name="Ring Doorbell Video",
 	description="Get instant alerts when visitors press your Doorbell or trigger the built-in motion sensors. Then use the free Ring app to see, hear and speak to guests from your smartphone, tablet or PC.",
 	price=99.99, recurring_price=17.00, payment_occurence_id=pom.id, 
 	link="https://shop.ring.com/collections/video-doorbells//products/video-doorbell",
-	category_id=dct.id, effectiveness_rating=4.7, narrative="Gives you the ability to activate lights via a phone app.")
+	category_id=dct.id, rating=4.7, narrative="Gives you the ability to activate lights via a phone app.")
 device.homecategories.append(hcd)
 db.session.add(device)
 db.session.commit()
 #---------------------------------------
+
+#Forms 
+from flask_wtf import FlaskForm, RecaptchaField
+from wtforms import StringField, TextField, TextAreaField, DecimalField, SelectField
+from wtforms.validators import InputRequired, Length, AnyOf, NumberRange
+
+class CreateDeviceForm(FlaskForm):
+	name = StringField('name', validators=[InputRequired(), Length(1, 80, 
+		message="Device name needs to be between 1 and 80 characters.")])
+	description = TextAreaField('desc', validators=[InputRequired(), Length(1, 
+		500, message="Description has too many characters, max=500.")])
+	price = DecimalField('price', places=2, validators=[InputRequired()])
+	recurring_price = DecimalField('recurring_price', places=2, validators=[InputRequired()])
+	payment_occurence = StringField('payment_occurence', 
+		validators=[InputRequired(), 
+		AnyOf(paymentoccurence.query.all(), message="Not a valid payment occurence.")])
+	link = StringField('link', validators=[InputRequired(), Length(7, 500, 
+		message="Hyperlink has too few or too many characters.")])
+	category = SelectField('device_category', choices=devicecategory.query.all() validators=[InputRequired(),
+		AnyOf(devicecategory.query.all(), message="Not a valid device category.")])
+	rating = DecimalField('rating', validators=[InputRequired(), NumberRange(min=0, max=5, 
+		message="Rating is invalid.")])
+	narrative = TextAreaField('narrative', validators=[Length(0, 500, 
+		message="Rating description must be less than 500 characters.")])
+	#recaptcha = RecaptchaField()
 
 #Routing 
 @app.route('/', methods=["GET", "POST"])
@@ -168,7 +193,7 @@ def createDevice(name=None):
 			payment_occurence_id=po.id, 
 			link=form.link.data,
 			category_id=dc.id, 
-			effectiveness_rating=form.rating.data,
+			rating=form.rating.data,
 			narrative=form.narrative.data
 			)
 			#add homecategories to device
@@ -189,6 +214,11 @@ def createDevice(name=None):
 
 		flash('Device created.', 'success')
 		return redirect(url_for('list'))
+	elif form.errors:
+		#Form validation failed 
+		flash('Device not created, validation failed.', 'danger')
+		print(form.errors)
+		return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
 	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
@@ -215,6 +245,7 @@ def getDevice(id):
 	except Exception as e: 
 		print(e)
 		flash('Device was not found.', 'danger')
+		return redirect(url_for('list'))
 
 	return render_template('item_details.html', device=device)
 

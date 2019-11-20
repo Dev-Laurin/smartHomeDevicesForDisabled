@@ -36,7 +36,7 @@
 			  <div class="input-group-prepend">
 			    <span class="input-group-text">$</span>
 			  </div>
-			  <input name="price" type="text" class="form-control" aria-label="Price">
+			  <input name="price" type="text" class="form-control" aria-label="Price" required>
 			  <div class="valid-feedback">
 			    	Looks good!
 			    </div> 
@@ -52,7 +52,13 @@
 			  <div class="input-group-prepend">
 			    <span class="input-group-text">Recurring $</span>
 			  </div>
-			  <input name="recurring_price" type="text" class="form-control" aria-label="Price">
+			  <input name="recurring_price" value='0' type="text" class="form-control" aria-label="Price" required>
+			  <div class="valid-feedback">
+			    	Looks good!
+			    </div> 
+			    <div class="invalid-feedback">
+			    	Please provide a reaccurring price. If none put 0.
+			    </div>
 			</div>
 			<div class="input-group mb-3">
 			  <div class="input-group-prepend">
@@ -96,7 +102,7 @@
 			  <div class="input-group-prepend">
 			    <label class="input-group-text" for="inputGroupSelect01">Device Rating</label>
 			  </div>
-			  <select name='effectiveness_rating' class="custom-select" id="inputGroupSelect01" required>
+			  <select name='rating' class="custom-select" id="inputGroupSelect01" required>
 			    <option value="1">One</option>
 			    <option value="2">Two</option>
 			    <option value="3">Three</option>
@@ -120,7 +126,7 @@
 			</div>
 			{% endfor %}
 			<br> 
-			{{ form.recaptcha }}
+			<!-- {{ form.recaptcha }} -->
 			<br> 
 			<button type='submit' class="btn btn-primary">Submit</button> 
 		</form> 
