@@ -1,11 +1,18 @@
 from flask import (Flask, render_template, request, 
 	url_for, redirect, flash)
 from flask_sqlalchemy import SQLAlchemy 
+from forms import CreateDeviceForm
 
+#Config 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test3.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+app.secret_key = b'\x1e\t\x1e\x93m\x8b#~yOL\x12\xab\xec\x8f<'
 db = SQLAlchemy(app)
+
+app.config['RECAPTCHA_PUBLIC_KEY'] = 'a public key'
+app.config['RECAPTCHA_PRIVATE_KEY'] = 'a private key'
+app.config['RECAPTCHA_DATA_ATTRS'] = {'theme': 'dark'}
 
 ##Database Schema
 
@@ -26,12 +33,6 @@ class devicecategory(db.Model):
 	device = db.relationship('Device',
 	 backref='devicecategory', lazy=True)
 
-# class assistivetechrating(db.Model):
-# 	def __str__(self):
-# 		return "<ATR %r>" % self.name 
-
-# 	id = db.Column(db.Integer, primary_key=True)
-	
 class paymentoccurence(db.Model):
 	def __str__(self):
 		return  self.name 
@@ -59,11 +60,10 @@ class Device(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(80), nullable=False)
 	description = db.Column(db.String(500), nullable=False)
-	price = db.Column(db.Float)
+	price = db.Column(db.Float, nullable=False)
 	recurring_price = db.Column(db.Float)
 	payment_occurence_id = db.Column(db.Integer, 
-		db.ForeignKey('paymentoccurence.id'),
-		nullable=False)
+		db.ForeignKey('paymentoccurence.id'))
 	link = db.Column(db.String(), nullable=False)
 
 	category_id = db.Column(db.Integer, 
@@ -72,12 +72,8 @@ class Device(db.Model):
 	homecategories = db.relationship('homecategory', 
 		secondary=homecategories, lazy='subquery',
 		backref=db.backref('devices', lazy=True))
-	# atp_rating_id = db.Column(db.Integer, 
-	# 	db.ForeignKey('assistivetechrating.id'),
-	# 	nullable=False)
-
 	effectiveness_rating = db.Column(db.Integer, nullable=False)
-	narrative = db.Column(db.String(500), nullable=False)
+	narrative = db.Column(db.String(500))
 
 #initialize database -- delete when in production!!!
 db.drop_all()
@@ -155,41 +151,50 @@ def list(name=None):
 
 @app.route('/createDevice', methods=["GET", "POST"])
 def createDevice(name=None):
+	form = CreateDeviceForm()
+
 	po = paymentoccurence.query.all()
 	dc = devicecategory.query.all()
 	hc = homecategory.query.all()
-	if request.method == 'POST':
-		po = paymentoccurence.query.filter_by(name=request.form.get('payment_occurence')).first()
-		dc = devicecategory.query.filter_by(name=request.form.get('device_category')).first()
-		device = Device(name=request.form.get('name'), 
-		description=request.form.get('desc'), 
-		price=request.form.get('price'),
-		recurring_price=request.form.get('recurring_price'),
-		payment_occurence_id=po.id, 
-		link=request.form.get('link'),
-		category_id=dc.id, 
-		effectiveness_rating=request.form.get('effectiveness_rating'),
-		narrative=request.form.get('narrative')
-		)
-		#add homecategories to device
-		for h in request.form.getlist('homeCat[]'): 
-			hc = homecategory.query.filter_by(name=h).first()
-			#If it doesn't exist, create it 
-			if(not hc.id):
-				hc = homecategory(name=h)
-				db.session.add(hc)
-				db.session.commit()
-			device.homecategories.append(hc)
+	if form.validate_on_submit():
 
-		db.session.add(device)
-		db.session.commit()
+		try: 
+			po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
+			dc = devicecategory.query.filter_by(name=request.category.data).first()
+			device = Device(name=form.name.data, 
+			description=form.description.data, 
+			price=form.price.data,
+			recurring_price=form.recurring_price.data,
+			payment_occurence_id=po.id, 
+			link=form.link.data,
+			category_id=dc.id, 
+			effectiveness_rating=form.rating.data,
+			narrative=form.narrative.data
+			)
+			#add homecategories to device
+			for h in request.form.getlist('homeCat[]'): 
+				hc = homecategory.query.filter_by(name=h).first()
+				#If it doesn't exist, create it 
+				if(not hc.id):
+					hc = homecategory(name=h)
+					db.session.add(hc)
+					db.session.commit()
+				device.homecategories.append(hc)
+
+			db.session.add(device)
+			db.session.commit()
+		except Exception as e: 
+			flash('Error. Device was not created.', 'danger')
+			return redirect(url_for('createDevice'))
+
+		flash('Device created.', 'success')
 		return redirect(url_for('list'))
-	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc)
+
+	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
 @app.route('/showDevices', methods=["POST"])
 def showDeviceOnCategory(name=None):
 	#get devices with compatible home categories
-	print(request.form.get('homecategory'))
 	homeCat = homecategory.query.filter_by(name=request.form.get('homecategory')).first()
 	devices = Device.query.filter(Device.homecategories.any(name=homeCat.name)).all()
 	deviceCats = request.form.getlist('inputCat[]')	
@@ -209,6 +214,7 @@ def getDevice(id):
 		device = Device.query.get(id)
 	except Exception as e: 
 		print(e)
+		flash('Device was not found.', 'danger')
 
 	return render_template('item_details.html', device=device)
 
