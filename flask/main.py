@@ -136,17 +136,25 @@ from wtforms.validators import InputRequired, Length, AnyOf, NumberRange
 class CreateDeviceForm(FlaskForm):
 	name = StringField('name', validators=[InputRequired(), Length(1, 80, 
 		message="Device name needs to be between 1 and 80 characters.")])
-	description = TextAreaField('desc', validators=[InputRequired(), Length(1, 
+	description = TextAreaField('description', validators=[InputRequired(), Length(1, 
 		500, message="Description has too many characters, max=500.")])
 	price = DecimalField('price', places=2, validators=[InputRequired()])
 	recurring_price = DecimalField('recurring_price', places=2, validators=[InputRequired()])
-	payment_occurence = StringField('payment_occurence', 
-		validators=[InputRequired(), 
-		AnyOf(paymentoccurence.query.all(), message="Not a valid payment occurence.")])
+	po = paymentoccurence.query.all() 
+	poChoices = []
+	for p in po: 
+		poChoices.append((p.name, p.name))
+	payment_occurence = SelectField('payment_occurence', choices=poChoices,
+		validators=[InputRequired()])
 	link = StringField('link', validators=[InputRequired(), Length(7, 500, 
 		message="Hyperlink has too few or too many characters.")])
-	category = SelectField('device_category', choices=devicecategory.query.all() validators=[InputRequired(),
-		AnyOf(devicecategory.query.all(), message="Not a valid device category.")])
+
+	categories = devicecategory.query.all() 
+	cat = []
+	for c in categories: 
+		cat.append((c.name, c.name))
+	print(cat)
+	category = SelectField('device_category', choices=cat, validators=[InputRequired()])
 	rating = DecimalField('rating', validators=[InputRequired(), NumberRange(min=0, max=5, 
 		message="Rating is invalid.")])
 	narrative = TextAreaField('narrative', validators=[Length(0, 500, 
@@ -185,7 +193,7 @@ def createDevice(name=None):
 
 		try: 
 			po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
-			dc = devicecategory.query.filter_by(name=request.category.data).first()
+			dc = devicecategory.query.filter_by(name=form.category.data).first()
 			device = Device(name=form.name.data, 
 			description=form.description.data, 
 			price=form.price.data,
@@ -210,7 +218,7 @@ def createDevice(name=None):
 			db.session.commit()
 		except Exception as e: 
 			flash('Error. Device was not created.', 'danger')
-			return redirect(url_for('createDevice'))
+			return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
 		flash('Device created.', 'success')
 		return redirect(url_for('list'))
