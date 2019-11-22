@@ -153,7 +153,6 @@ class CreateDeviceForm(FlaskForm):
 	cat = []
 	for c in categories: 
 		cat.append((c.name, c.name))
-	print(cat)
 	category = SelectField('device_category', choices=cat, validators=[InputRequired()])
 	rating = DecimalField('rating', validators=[InputRequired(), NumberRange(min=0, max=5, 
 		message="Rating is invalid.")])
@@ -218,14 +217,17 @@ def createDevice(name=None):
 			db.session.commit()
 		except Exception as e: 
 			flash('Error. Device was not created.', 'danger')
+			app.logger.info('Error. Device was not created.')
 			return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
+		app.logger.info('Device created.')
 		flash('Device created.', 'success')
 		return redirect(url_for('list'))
 	elif form.errors:
 		#Form validation failed 
 		flash('Device not created, validation failed.', 'danger')
-		print(form.errors)
+		app.logger.info('Device not created, validation failed.')
+		app.logger.info(form.errors)
 		return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
 	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
@@ -251,8 +253,9 @@ def getDevice(id):
 	try: 
 		device = Device.query.get(id)
 	except Exception as e: 
-		print(e)
 		flash('Device was not found.', 'danger')
+		app.logger.info("Device was not found.")
+		app.logger.info(e)
 		return redirect(url_for('list'))
 
 	return render_template('item_details.html', device=device)
