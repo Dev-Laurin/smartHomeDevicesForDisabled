@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block main %}
+<div class="container">
+	<ul class="list-group">
+	<!-- Home Category -->
+		{% set rows = (devices|length) %}
+		{% for row in range(rows) %}
+			{% if devices[row].devicecategory.name == devices[row - 1].devicecategory.name %}
+			<li class="list-group-item">
+		    	<a href="/getDevice/{{devices[row].id}}">
+		    		{{devices[row].name}}
+				</a>
+				<button type="button" class="btn btn-danger float-right">Delete</button>
+		    </li>
+		    {% else %}
+		    	<li class="list-group-item">
+		    		<h3>{{ devices[row].devicecategory.name }}</h3>
+		    	</li>
+		    	<li class="list-group-item">
+			    	<a href="/getDevice/{{devices[row].id}}">
+			    		{{devices[row].name}}
+					</a>
+					<button type="button" class="btn btn-danger float-right">Delete</button>
+		    	</li>
+		    {% endif %}
+
+		{% endfor %}
+	</ul>
+</div>
+
+{% endblock %}

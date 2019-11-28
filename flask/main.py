@@ -243,7 +243,11 @@ def showDeviceOnCategory(name=None):
 	for dc in deviceCats: 
 		deviceCat = devicecategory.query.filter_by(name=dc).first()
 		homecatquery = homecategory.query.join()
-		devices.extend(Device.query.join(devicecategory, Device.category_id==devicecategory.id).filter(devicecategory.id==deviceCat.id).filter(Device.homecategories.any(homecategory.id==homeCat.id)).all())
+		devices.extend(Device.query.join(devicecategory, 
+			Device.category_id==devicecategory.id)
+		.filter(devicecategory.id==deviceCat.id)
+		.filter(Device.homecategories
+			.any(homecategory.id==homeCat.id)).all())
 
 	return render_template('list_devices_by_category.html', 
 		devices=devices, category=homeCat.name)
@@ -259,6 +263,12 @@ def getDevice(id):
 		return redirect(url_for('list'))
 
 	return render_template('item_details.html', device=device)
+
+@app.route('/editDevices')
+def editDevices():
+	devices = Device.query.order_by(Device.category_id).all()
+
+	return render_template('list_devices.html', devices=devices)
 
 @app.route('/editCategories')
 def editCategories(name=None):
