@@ -10,7 +10,7 @@
 		    	<a href="/getDevice/{{devices[row].id}}">
 		    		{{devices[row].name}}
 				</a>
-				<button type="button" class="btn btn-danger float-right">Delete</button>
+				<button href="/deleteDevice/{{devices[row].id}}" type="button" class="btn btn-danger float-right">Delete</button>
 		    </li>
 		    {% else %}
 		    	<li class="list-group-item">
@@ -20,7 +20,7 @@
 			    	<a href="/getDevice/{{devices[row].id}}">
 			    		{{devices[row].name}}
 					</a>
-					<button type="button" class="btn btn-danger float-right">Delete</button>
+					<button href="/deleteDevice/{{devices[row].id}}" type="button" class="btn btn-danger float-right">Delete</button>
 		    	</li>
 		    {% endif %}
 

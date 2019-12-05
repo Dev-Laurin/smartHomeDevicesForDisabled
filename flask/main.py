@@ -262,18 +262,31 @@ def getDevice(id):
 		app.logger.info(e)
 		return redirect(url_for('list'))
 
-	return render_template('item_details.html', device=device)
+	return render_template('device_details.html', device=device)
 
 @app.route('/editDevices')
 def editDevices():
 	devices = Device.query.order_by(Device.category_id).all()
 
-	return render_template('list_devices.html', devices=devices)
+	return render_template('editDevices.html', devices=devices)
 
 @app.route('/editCategories')
 def editCategories(name=None):
 	deviceCat = devicecategory.query.join(Device).filter(Device.category_id==devicecategory.id).all()
 	return render_template('categories.html', deviceCat=deviceCat)
+
+@app.route('/deleteDevice/<id>')
+def deleteDevice(id):
+	try: 
+		device = Device.query.get(id)
+		db.session.delete(device)
+		db.session.commit() 
+	except Exception as e: 
+		flash('Device could not be deleted.', 'danger')
+		app.logger.info('Device could not be deleted.')
+		app.logger.info(e)
+
+	return redirect(url_for('editDevices'))
 
 if __name__ == '__main__':
 	app.run()
