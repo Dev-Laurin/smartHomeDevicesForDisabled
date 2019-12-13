@@ -22,10 +22,24 @@ jobs:
         echo Install Dependencies (requirements.txt)
         pip3 install -r requirements.txt
         echo Run Tests
+        pytest
         echo Deactivate Environment
         deactivate
+        echo Lint scan 
+        echo Accessibility Lint scan 
         echo Add www-data to group for files 
         echo Set permissions for files 
         echo Start service (gunicorn)
         echo Enable service 
         echo Restart Nginx
+        
+  sonarCloudTrigger:
+    name: SonarCloud Trigger
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
