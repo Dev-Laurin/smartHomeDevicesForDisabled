@@ -10,9 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Starting Build
-      run: echo Starting Build
-    - name: Build Commands
+    - name: Install Dependencies 
       run: |
         echo Create Virtual Environment
         python3 -m pip install --user --upgrade pip
@@ -21,18 +19,20 @@ jobs:
         source env/bin/activate
         echo Install Dependencies (requirements.txt)
         pip3 install -r requirements.txt
-        echo Run Tests
+    - name: Run Python Tests
+      run: |
         pytest
         echo Deactivate Environment
         deactivate
+    - name: Other
+      run: | 
         echo Lint scan 
-        echo Accessibility Lint scan 
         echo Add www-data to group for files 
         echo Set permissions for files 
         echo Start service (gunicorn)
         echo Enable service 
         echo Restart Nginx
-        
+
   sonarCloudTrigger:
     name: SonarCloud Trigger
     runs-on: ubuntu-latest
