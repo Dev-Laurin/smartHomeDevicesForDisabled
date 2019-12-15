@@ -1,0 +1,61 @@
+?
+mysql.MySQLConnection&
+cursormysql.MySQLConnection.cursorQ
+pymysql.connections.Connection/
+cursor%pymysql.connections.Connection.cursor;
+psycopg2.Connection$
+cursorpsycopg2.Connection.cursor¬
+sqlite3.Connection#
+cursorsqlite3.Connection.cursor1
+executescript sqlite3.Connection.executescript%
+executesqlite3.Connection.execute-
+executemanysqlite3.Connection.executemany3
+pgdb.Connection 
+cursorpgdb.Connection.cursora
+psycopg2.Cursor"
+executepsycopg2.Cursor.execute*
+executemanypsycopg2.Cursor.executemanyv
+pymysql.cursors.Cursor)
+executepymysql.cursors.Cursor.execute1
+executemany"pymysql.cursors.Cursor.executemanyU
+pgdb.Cursor
+executepgdb.Cursor.execute&
+executemanypgdb.Cursor.executemanyg
+mysql.MySQLCursor$
+executemysql.MySQLCursor.execute,
+executemanymysql.MySQLCursor.executemanyç
+sqlite3.Cursor-
+executescriptsqlite3.Cursor.executescript!
+executesqlite3.Cursor.execute)
+executemanysqlite3.Cursor.executemany°
+str
+isalphastr.isalpha
+
+startswithstr.startswith
+	isdecimalstr.isdecimal
+rindex
+str.rindex
+isalnumstr.isalnum
+replacestr.replace
+count	str.count
+isspacestr.isspace
+index	str.index
+__eq__
+str.__eq__
+endswithstr.endswith 
+isidentifierstr.isidentifier
+findstr.find
+isdigitstr.isdigit
+rfind	str.rfind
+isasciistr.isascii
+	isnumericstr.isnumeric;
+app.devicecategory%
+__str__app.devicecategory.__str__?
+app.paymentoccurence'
+__str__app.paymentoccurence.__str__7
+app.homecategory#
+__str__app.homecategory.__str__+
+
+app.Device
+__str__app.Device.__str__+
+app.CreateDeviceFormflask_wtf.FlaskForm

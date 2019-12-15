@@ -1,0 +1,7 @@
+organization=dev-laurin
+projectKey=Dev-Laurin_smartHomeDevicesForDisabled
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.3457
+dashboardUrl=https://sonarcloud.io/dashboard?id=Dev-Laurin_smartHomeDevicesForDisabled
+ceTaskId=AW7_qTegakqnvS3m-otP
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AW7_qTegakqnvS3m-otP
