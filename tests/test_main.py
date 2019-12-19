@@ -1,9 +1,9 @@
 import os 
-import tempfile
-
 import pytest
 
 from smartify import smartify 
+from sqlalchemy import event 
+from sqlalchemy.orm import sessionmaker 
 
 @pytest.fixture
 def client():
