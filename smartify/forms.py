@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, TextField, TextAreaField, DecimalField, SelectField
 from wtforms.validators import InputRequired, Length, AnyOf, NumberRange
+from .models import (db, Device, devicecategory, paymentoccurence, 
+	homecategory, homecategories) 
 
 class CreateDeviceForm(FlaskForm):
 	name = StringField('name', validators=[InputRequired(), Length(1, 80, 
