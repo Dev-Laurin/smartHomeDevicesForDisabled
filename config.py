@@ -11,8 +11,11 @@ class ProdConfig(Config):
 	RECAPTCHA_PUBLIC_KEY = 'a public key'
 	RECAPTCHA_PRIVATE_KEY = 'a private key'
 	RECAPTCHA_DATA_ATTRS = {'theme': 'dark'}
+	WTF_CSRF_ENABLED = True 
 
 class DevConfig(Config):
 	DEBUG = True 
 	TESTING = True 
 	SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
+	WTF_CSRF_ENABLED = False 
+	BCRYPT_LOG_ROUNDS = 4

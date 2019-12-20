@@ -14,7 +14,7 @@ def create_app(dev_config=None):
 		app.config.from_object('config.ProdConfig')
 	else: 
 		#load the test config if passed in 
-		app.config.from_config('config.DevConfig')
+		app.config.from_object('config.DevConfig')
 
 	db.init_app(app)		
 

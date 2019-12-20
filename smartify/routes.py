@@ -8,7 +8,7 @@ from .forms import CreateDeviceForm
 
 #Routing 
 @app.route('/', methods=["GET", "POST"])
-def list(name=None):
+def list():
 	categories = devicecategory.query.all()
 	devices = Device.query.all() 
 	homecategories = homecategory.query.all()
@@ -28,7 +28,7 @@ def list(name=None):
 		categories=categories, homecategories=homecategories)
 
 @app.route('/createDevice', methods=["GET", "POST"])
-def createDevice(name=None):
+def createDevice():
 	form = CreateDeviceForm()
 
 	po = paymentoccurence.query.all()
@@ -79,7 +79,7 @@ def createDevice(name=None):
 	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
 @app.route('/showDevices', methods=["POST"])
-def showDeviceOnCategory(name=None):
+def showDeviceOnCategory():
 	#get devices with compatible home categories
 	homeCat = homecategory.query.filter_by(name=request.form.get('homecategory')).first()
 	devices = Device.query.filter(Device.homecategories.any(name=homeCat.name)).all()
@@ -117,7 +117,7 @@ def editDevices():
 	return render_template('editDevices.html', devices=devices)
 
 @app.route('/editCategories')
-def editCategories(name=None):
+def editCategories():
 	deviceCat = devicecategory.query.join(Device).filter(Device.category_id==devicecategory.id).all()
 	return render_template('categories.html', deviceCat=deviceCat)
 
