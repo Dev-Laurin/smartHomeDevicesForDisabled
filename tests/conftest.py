@@ -22,14 +22,12 @@ def app(request):
 @pytest.fixture(scope='session')
 def db(app, request):
 	"""Session-wide test database."""
-	def teardown():
-		_db.drop_all()
-
 	_db.app = app 
 	_db.create_all() 
 
-	request.addfinalizer(teardown)
-	return _db 
+	yield _db 
+
+	_db.drop_all()  
 
 @pytest.fixture(scope='function')
 def session(db, request):
