@@ -1,0 +1,29 @@
+{
+  "name": "smartify",
+  "version": "1.0.0",
+  "description": "A website to aid those with disabilities to find smart home devices to help aid in independence. ",
+  "main": "index.js",
+  "dependencies": {
+    "jest": "^24.9.0"
+  },
+  "devDependencies": {
+    "frisby": "^2.1.2"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dev-Laurin/smartHomeDevicesForDisabled.git"
+  },
+  "keywords": [
+    "smart",
+    "devices"
+  ],
+  "author": "Laurin McKenna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dev-Laurin/smartHomeDevicesForDisabled/issues"
+  },
+  "homepage": "https://github.com/Dev-Laurin/smartHomeDevicesForDisabled#readme"
+}
