@@ -21,7 +21,7 @@ def list():
 		if deviceCats: 
 			devices = []
 		for dc in deviceCats: 
-			devicesFound = devicecategory.query.with_parent(device).all()
+			devicesFound = devicecategory.query.with_parent(dc).all()
 			devices.extend(devicesFound)
 
 	return render_template('list.html', devices=devices, 
