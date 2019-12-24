@@ -4,17 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-def create_app(dev_config=None):
+def create_app():
 	#create and configure the app 
 	app = Flask(__name__, instance_relative_config=True, 
 		template_folder="templates", static_folder="static")
-	app.config.from_object('config.Config')
-
-	if dev_config is None: 
-		app.config.from_object('config.ProdConfig')
-	else: 
-		#load the test config if passed in 
-		app.config.from_config('config.DevConfig')
+	app.config.from_envvar('APP_CONFIG_FILE')
 
 	db.init_app(app)		
 
