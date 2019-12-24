@@ -27,8 +27,8 @@ def list():
 	return render_template('list.html', devices=devices, 
 		categories=categories, homecategories=homecategories)
 
-@app.route('/createDevice', methods=["GET", "POST"])
-def createDevice():
+@app.route('/createDevice/<id>', methods=["GET", "POST"])
+def createDevice(id):
 	form = CreateDeviceForm()
 
 	po = paymentoccurence.query.all()
@@ -36,9 +36,25 @@ def createDevice():
 	hc = homecategory.query.all()
 	if form.validate_on_submit():
 
-		try: 
-			po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
-			dc = devicecategory.query.filter_by(name=form.category.data).first()
+		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
+		dc = devicecategory.query.filter_by(name=form.category.data).first()
+
+		device = Device.query.get_or_404(id)
+		if device: 
+			device.name = form.name.data 
+			device.description = form.description.data 
+			device.price = form.price.data 
+			device.recurring_price = form.recurring_price.data 
+			device.payment_occurence_id=po.id 
+			device.link = form.link.data 
+			device.category_id = dc.id 
+			device.rating = form.rating.data 
+			device.narrative = form.narrative.data 
+
+			#delete previous homecategories 
+			device.homecategories = []
+
+		else: 		
 			device = Device(name=form.name.data, 
 			description=form.description.data, 
 			price=form.price.data,
@@ -49,6 +65,8 @@ def createDevice():
 			rating=form.rating.data,
 			narrative=form.narrative.data
 			)
+				
+		try: 
 			#add homecategories to device
 			for h in request.form.getlist('homeCat[]'): 
 				hc = homecategory.query.filter_by(name=h).first()
@@ -58,7 +76,6 @@ def createDevice():
 					db.session.add(hc)
 					db.session.commit()
 				device.homecategories.append(hc)
-
 			db.session.add(device)
 			db.session.commit()
 		except Exception as e: 

@@ -20,7 +20,11 @@
 			    	<a href="/getDevice/{{devices[row].id}}">
 			    		{{devices[row].name}}
 					</a>
-					<button href="/deleteDevice/{{devices[row].id}}" type="button" class="btn btn-danger float-right">Delete</button>
+					<div class="float-right">
+						<a href="/createDevice/{{devices[row].id}}" type="button" class="btn btn-warning">Edit</a>
+						<a href="/deleteDevice/{{devices[row].id}}" type="button" class="btn btn-danger">Delete</a>
+					</div>
+					
 		    	</li>
 		    {% endif %}
 
