@@ -37,6 +37,11 @@ def createDevice(id):
 	device = Device.query.get_or_404(id)
 	device_po = paymentoccurence.query.get(device.payment_occurence_id)
 	device_cat = devicecategory.query.get(device.category_id)
+	device_hc = []
+	for h in device.homecategories: 
+		device_hc.append(h.name)
+
+	print(device_hc)
 
 	if form.validate_on_submit():
 
@@ -97,7 +102,7 @@ def createDevice(id):
 		app.logger.info(form.errors)
 		return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
-	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form, device=device, device_po=device_po, device_cat=device_cat, device_verb='Edit')
+	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form, device=device, device_po=device_po, device_cat=device_cat, device_verb='Edit', device_hc=device_hc)
 
 @app.route('/showDevices', methods=["POST"])
 def showDeviceOnCategory():

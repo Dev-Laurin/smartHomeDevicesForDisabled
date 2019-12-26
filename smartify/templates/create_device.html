@@ -134,8 +134,8 @@
 		<p>Select all categories that apply</p> 
 		{% for homecategory in homecategories %}
 		<div class="form-check">
-		  <input class="form-check-input" type="checkbox" value="{{homecategory.name}}" name="homeCat[]" id="{{homecategory.id}}" required>
-		  <label class="form-check-label" for="{{homecategory.id}}">
+		  <input class="form-check-input" type="checkbox" value="{{homecategory.name}}" name="homeCat[]" id="{{homecategory.name}}" required>
+		  <label class="form-check-label" for="{{homecategory.name}}">
 		    {{homecategory.name}}
 		  </label>
 		</div>
@@ -207,6 +207,11 @@
 	    	}
 	    }
 	    //homecategories 
+	    var homeCatsArray = {{device_hc|safe}}; 
+	    for(var i=0; i<homeCatsArray.length; i++){
+	    	var checkbox = document.getElementById(homeCatsArray[i])
+	    	checkbox.checked = true 
+	    }
 	    
 	  }, false);
 	})();
