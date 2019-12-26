@@ -34,12 +34,15 @@ def createDevice(id):
 	po = paymentoccurence.query.all()
 	dc = devicecategory.query.all()
 	hc = homecategory.query.all()
+	device = Device.query.get_or_404(id)
+	device_po = paymentoccurence.query.get(device.payment_occurence_id)
+	device_cat = devicecategory.query.get(device.category_id)
+
 	if form.validate_on_submit():
 
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
 		dc = devicecategory.query.filter_by(name=form.category.data).first()
 
-		device = Device.query.get_or_404(id)
 		if device: 
 			device.name = form.name.data 
 			device.description = form.description.data 
@@ -79,21 +82,22 @@ def createDevice(id):
 			db.session.add(device)
 			db.session.commit()
 		except Exception as e: 
-			flash('Error. Device was not created.', 'danger')
+			flash('Error. Device was not created/edited.', 'danger')
 			app.logger.info('Error. Device was not created.')
-			return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
+			app.logger.info(e)
+			return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form, device=device, device_verb='Create')
 
-		app.logger.info('Device created.')
+		app.logger.info('Device created/edited.')
 		flash('Device created.', 'success')
 		return redirect(url_for('list'))
 	elif form.errors:
 		#Form validation failed 
-		flash('Device not created, validation failed.', 'danger')
+		flash('Device not created/edited, validation failed.', 'danger')
 		app.logger.info('Device not created, validation failed.')
 		app.logger.info(form.errors)
 		return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
 
-	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
+	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form, device=device, device_po=device_po, device_cat=device_cat, device_verb='Edit')
 
 @app.route('/showDevices', methods=["POST"])
 def showDeviceOnCategory():

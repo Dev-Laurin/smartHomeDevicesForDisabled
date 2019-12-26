@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block main %}
 <div class="row">
-	<h2> Create a new Device </h2>
+	<h2> {{device_verb}} Device </h2>
 </div>
 <div>
 	<form class="needs-validation" action="/createDevice" method="post" novalidate> 
@@ -9,9 +9,13 @@
 		<div class="form-group"> 
 			<div class="input-group mb-3">
 			  <div class="input-group-prepend">
-			    <label class="input-group-text" for='name'>Device Name</label>
+			  	<label class="input-group-text" for='name'>Device Name</label>
 			  </div>
-			  <input type="text" id='name' name="name" class="form-control" required>
+			  {% if device.name %}
+			  	<input type="text" id='name' name="name" class="form-control" value="{{device.name}}" required>
+			  {% else %}
+			  	<input type="text" id='name' name="name" class="form-control" required>
+			  {% endif %}
 			  <div class="valid-feedback">
 			  	Looks good! 
 			  </div>
@@ -22,7 +26,12 @@
 		</div> 
 		<div class="form-group">
 		    <label for="description">Product Description</label>
-		    <textarea class="form-control" name="description" id="description" rows="3" required></textarea>
+		    {% if device.description %}
+		    	<textarea class="form-control" name="description" id="description" rows="3" required>{{device.description}}</textarea>
+		    {% else %}
+		    	<textarea class="form-control" name="description" id="description" rows="3" required></textarea>
+		    }
+		    {% endif %}
 		    <div class="valid-feedback">
 		    	Looks good!
 		    </div> 
@@ -34,7 +43,11 @@
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for='price'>$</label>
 		  </div>
-		  <input name="price" id='price' type="text" class="form-control" required>
+		  {% if device.price %}
+		  	<input name="price" id='price' type="text" class="form-control" value="{{device.price}}" required>
+		  {% else %}
+		  	<input name="price" id='price' type="text" class="form-control" required>
+		  {% endif %}
 		  <div class="valid-feedback">
 		    	Looks good!
 		    </div> 
@@ -44,13 +57,21 @@
 		</div>
 		 <div class="form-group">
 		    <label for="narrative">Describe the rating for this device.</label>
-		    <textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
+		    {% if device.narrative %}
+		    	<textarea class="form-control" name="narrative" id="narrative" rows="3">{{device.narrative}}</textarea>
+		    {% else %}
+		    	<textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
+		    {% endif %}
 		  </div>
 		 <div class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for='recurring_price'>Recurring $</label>
 		  </div>
-		  <input name="recurring_price" id='recurring_price' value=0 type="text" class="form-control" required>
+		  {% if device.recurring_price %}
+		  	<input name="recurring_price" id='recurring_price' value=0 type="text" value="{{device.recurring_price}}" class="form-control" required>
+		  {% else %}
+		  	<input name="recurring_price" id='recurring_price' value=0 type="text" class="form-control" required>
+		  {% endif %}
 		  <div class="valid-feedback">
 		    	Looks good!
 		    </div> 
@@ -62,30 +83,29 @@
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="payment_occurence">Payment Type</label>
 		  </div>
-		  <!-- <select class="custom-select" id="inputGroupSelect01" name="payment_occurence" required>
-		    {% for p in po %}
-		    	<option value="{{p}}">{{p}}</option>
-		    {% endfor %}
-		  </select> -->
-		  {{ form.payment_occurence(class="custom-select") }}
+		  {{ form.payment_occurence(class="custom-select", value="{{device.payment_occurence}}", id="payment_occurence") }}
 		</div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="link">Hyperlink to Purchase Device</label>
 		  </div>
-		  <input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' required>
+		  {% if device.link %}
+		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' value="{{device.link}}" required>
+		  {% else %}
+		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' required>
+		  {% endif %}
 		  <div class="valid-feedback">
 		    	Looks good!
-		    </div> 
-		    <div class="invalid-feedback">
-		    	Please provide a hyperlink to the device.
-		    </div>
+		  </div> 
+		  <div class="invalid-feedback">
+		    Please provide a hyperlink to the device.
+		  </div>
 		</div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="category">Device Control Category</label>
 		  </div>
-		  {{ form.category(class="custom-select") }}
+		  {{ form.category(class="custom-select", id="category", onload="categoryLoad()") }}
 		  <div class="valid-feedback">
 		    	Looks good!
 		  </div> 
@@ -139,15 +159,15 @@
 	  window.addEventListener('load', function() {
 
 	  	//check that at least one device input checkbox is selected
-	var requiredCheckboxes = $('.form-check :checkbox[required]'); 
-	requiredCheckboxes.change(function(){
-		if(requiredCheckboxes.is(':checked')){
-			requiredCheckboxes.removeAttr('required'); 
-		}
-		else {
-			requiredCheckboxes.attr('required', 'required'); 
-		}
-	})
+		// var requiredCheckboxes = $('.form-check :checkbox[required]'); 
+		// requiredCheckboxes.change(function(){
+		// 	if(requiredCheckboxes.is(':checked')){
+		// 		requiredCheckboxes.removeAttr('required'); 
+		// 	}
+		// 	else {
+		// 		requiredCheckboxes.attr('required', 'required'); 
+		// 	}
+		// })
 
 	    // Fetch all the forms we want to apply custom Bootstrap validation styles to
 	    var forms = document.getElementsByClassName('needs-validation');
@@ -161,6 +181,33 @@
 	        form.classList.add('was-validated');
 	      }, false);
 	    });
+	  
+	    //if editing device -- show correct values inside select statements 
+	    //payment type 
+	    var select = document.getElementById('payment_occurence'); 
+	    for(var i=0; i<select.options.length; i++){
+	    	if(select.options[i].value=="{{device_po}}"){
+	    		select.selectedIndex = i; 
+	    	}
+	    }
+
+	    //device control category
+	    select = document.getElementById('category'); 
+	    for(var i=0; i<select.options.length; i++){
+	    	if(select.options[i].value=="{{device_cat}}"){
+	    		select.selectedIndex = i; 
+	    	}
+	    }
+	    
+	    //device rating 
+	    select = document.getElementById('rating');
+	    for(var i=0; i<select.options.length; i++){
+	    	if(select.options[i].value==Math.floor({{device.rating}})){
+	    		select.selectedIndex = i; 
+	    	}
+	    }
+	    //homecategories 
+	    
 	  }, false);
 	})();
 </script>
