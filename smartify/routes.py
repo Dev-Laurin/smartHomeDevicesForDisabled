@@ -28,20 +28,30 @@ def list():
 		categories=categories, homecategories=homecategories)
 
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
-def createDevice(id):
+@app.route('/createDevice', methods=["GET", "POST"])
+def createDevice(id=None):
 	form = CreateDeviceForm()
 
 	po = paymentoccurence.query.all()
 	dc = devicecategory.query.all()
 	hc = homecategory.query.all()
-	device = Device.query.get_or_404(id)
-	device_po = paymentoccurence.query.get(device.payment_occurence_id)
-	device_cat = devicecategory.query.get(device.category_id)
-	device_hc = []
-	for h in device.homecategories: 
-		device_hc.append(h.name)
 
-	print(device_hc)
+	device = None 
+	device_po = None 
+	device_hc = []
+	device_cat = None 
+
+	if id: 
+		device_verb="Edit"
+		device = Device.query.get_or_404(id)
+		device_po = paymentoccurence.query.get(device.payment_occurence_id)
+		device_cat = devicecategory.query.get(device.category_id)
+		device_hc = []
+		for h in device.homecategories: 
+			device_hc.append(h.name)
+	else: 
+		device_verb="Create"
+	
 
 	if form.validate_on_submit():
 
@@ -90,7 +100,9 @@ def createDevice(id):
 			flash('Error. Device was not created/edited.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
-			return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form, device=device, device_verb='Create')
+			return render_template('create_device.html', po=po, deviceCat=dc, 
+				homecategories=hc, form=form, device=device, device_verb=device_verb, 
+				device_po=device_po, device_cat=device_cat, device_hc=device_hc)
 
 		app.logger.info('Device created/edited.')
 		flash('Device created.', 'success')
@@ -100,9 +112,12 @@ def createDevice(id):
 		flash('Device not created/edited, validation failed.', 'danger')
 		app.logger.info('Device not created, validation failed.')
 		app.logger.info(form.errors)
-		return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form)
+		return render_template('create_device.html', po=po, deviceCat=dc, 
+			homecategories=hc, form=form, device_verb=device_verb)
 
-	return render_template('create_device.html', po=po, deviceCat=dc, homecategories=hc, form=form, device=device, device_po=device_po, device_cat=device_cat, device_verb='Edit', device_hc=device_hc)
+	return render_template('create_device.html', po=po, deviceCat=dc, 
+		homecategories=hc, form=form, device=device, device_po=device_po, 
+		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
 
 @app.route('/showDevices', methods=["POST"])
 def showDeviceOnCategory():
@@ -139,7 +154,6 @@ def getDevice(id):
 @app.route('/editDevices')
 def editDevices():
 	devices = Device.query.order_by(Device.category_id).all()
-
 	return render_template('editDevices.html', devices=devices)
 
 @app.route('/editCategories')
