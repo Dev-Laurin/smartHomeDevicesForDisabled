@@ -30,3 +30,11 @@ class CreateDeviceForm(FlaskForm):
 	narrative = TextAreaField('narrative', validators=[Length(0, 500, 
 		message="Rating description must be less than 500 characters.")])
 	#recaptcha = RecaptchaField()
+
+class AddCategoryForm(FlaskForm):
+	name = StringField('name', validators=[InputRequired(), Length(1, 80, 
+		message="Category name needs to be between 1 and 80 characters.")])
+
+class EditCategoryForm(FlaskForm):
+	name = StringField('name', validators=[InputRequired(), Length(1, 80, 
+		message="Category name needs to be between 1 and 80 characters.")])

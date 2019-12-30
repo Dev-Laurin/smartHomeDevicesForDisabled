@@ -4,7 +4,7 @@ from flask import (Flask, render_template, request,
 from flask import current_app as app 
 from .models import (db, Device, devicecategory, paymentoccurence, 
 	homecategory, homecategories) 
-from .forms import CreateDeviceForm
+from .forms import CreateDeviceForm, AddCategoryForm, EditCategoryForm
 
 #Routing 
 @app.route('/', methods=["GET", "POST"])
@@ -29,7 +29,9 @@ def list():
 
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
 @app.route('/createDevice', methods=["GET", "POST"])
+@app.route('/createDevice/', methods=["GET", "POST"])
 def createDevice(id=None):
+	print('in create device')
 	form = CreateDeviceForm()
 
 	po = paymentoccurence.query.all()
@@ -140,7 +142,7 @@ def showDeviceOnCategory():
 		devices=devices, category=homeCat.name)
 
 @app.route('/getDevice/<id>')
-def getDevice(id):
+def getDevice(id=None):
 	try: 
 		device = Device.query.get(id)
 	except Exception as e: 
@@ -158,8 +160,58 @@ def editDevices():
 
 @app.route('/editCategories')
 def editCategories():
-	deviceCat = devicecategory.query.join(Device).filter(Device.category_id==devicecategory.id).all()
+	deviceCat = devicecategory.query.all()
 	return render_template('categories.html', deviceCat=deviceCat)
+
+@app.route('/editCategory/<id>', methods=["POST"])
+def editCategory(id):
+	form = EditCategoryForm()
+	if form.validate_on_submit():
+		try: 
+			cat = devicecategory.query.get(id)
+			cat.name = form.name.data
+			db.session.add(cat)
+			db.session.commit()
+			flash('Category edited.', 'success')
+		except Exception as e: 
+			flash('Editing category failed.', 'danger')
+			app.logger.info('Editing category failed (db).')
+			app.logger.info(e)
+	else: 
+		flash(form.errors, 'danger')
+		app.logger.info(form.errors)
+	return redirect(url_for('editCategories'))
+
+@app.route('/addCategory', methods=["GET", "POST"])
+def addCategory():
+	form = AddCategoryForm()
+	if form.validate_on_submit(): 
+		dc = devicecategory(name=form.name.data)
+		try: 
+			db.session.add(dc)
+			db.session.commit()
+			flash("Category created.", 'success')
+			app.logger.info("Category created.")
+		except Exception as e: 
+			flash("Category could not be created.", 'danger')
+			app.logger.info('Category could not be created in db.')
+			app.logger.info(e)
+	return redirect(url_for('editCategories'))
+
+@app.route('/deleteCategory/<id>')
+def deleteCategory(id=None):
+	try: 
+		dc = devicecategory.query.get(id)
+		db.session.delete(dc)
+		db.session.commit() 
+		app.logger.info('Category deleted.')
+		flash('Category successfully deleted.', 'success')
+	except Exception as e: 
+		flash('Category could not be deleted. There are still devices that use this category.', 'danger')
+		app.logger.info('Device category could not be deleted.')
+		app.logger.info(e)
+	
+	return redirect(url_for('editCategories'))
 
 @app.route('/deleteDevice/<id>')
 def deleteDevice(id):
@@ -171,7 +223,8 @@ def deleteDevice(id):
 		flash('Device could not be deleted.', 'danger')
 		app.logger.info('Device could not be deleted.')
 		app.logger.info(e)
-
+	flash('Device successfully deleted.', 'success')
+	app.logger.info('Device deleted.')
 	return redirect(url_for('editDevices'))
 
 if __name__ == '__main__':

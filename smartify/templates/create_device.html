@@ -4,8 +4,8 @@
 	<h2> {{device_verb}} Device </h2>
 </div>
 <div>
-	<form class="needs-validation" action="/createDevice" method="post" novalidate> 
-		{{ form.csrf_token }}
+	<form class="needs-validation" action="/createDevice/{{device.id}}" method="post" novalidate> 
+		<!-- {{ form.csrf_token }} -->
 		<div class="form-group"> 
 			<div class="input-group mb-3">
 			  <div class="input-group-prepend">
@@ -159,15 +159,15 @@
 	  window.addEventListener('load', function() {
 
 	  	//check that at least one device input checkbox is selected
-		// var requiredCheckboxes = $('.form-check :checkbox[required]'); 
-		// requiredCheckboxes.change(function(){
-		// 	if(requiredCheckboxes.is(':checked')){
-		// 		requiredCheckboxes.removeAttr('required'); 
-		// 	}
-		// 	else {
-		// 		requiredCheckboxes.attr('required', 'required'); 
-		// 	}
-		// })
+		var requiredCheckboxes = $('.form-check :checkbox[required]'); 
+		requiredCheckboxes.change(function(){
+			if(requiredCheckboxes.is(':checked')){
+				requiredCheckboxes.removeAttr('required'); 
+			}
+			else {
+				requiredCheckboxes.attr('required', 'required'); 
+			}
+		})
 
 	    // Fetch all the forms we want to apply custom Bootstrap validation styles to
 	    var forms = document.getElementsByClassName('needs-validation');
