@@ -5,6 +5,7 @@ from flask import current_app as app
 from .models import (db, Device, devicecategory, paymentoccurence, 
 	homecategory, homecategories) 
 from .forms import CreateDeviceForm, AddCategoryForm, EditCategoryForm
+from . import file_upload
 
 #Routing 
 @app.route('/', methods=["GET", "POST"])
@@ -67,6 +68,10 @@ def editDevice(id):
 
 			#delete previous homecategories 
 			device.homecategories = []
+
+			device = file_upload.update_files(device, files={
+				"image": request.files['image']
+			})
 	
 			try: 
 				#add homecategories to device
@@ -134,6 +139,9 @@ def createDevice():
 			rating=form.rating.data,
 			narrative=form.narrative.data
 			)
+			device = file_upload.save_files(device, files={
+				"image": request.files['image']
+			})
 			#add homecategories to device
 			for h in request.form.getlist('homeCat[]'): 
 				hc = homecategory.query.filter_by(name=h).first()
@@ -258,6 +266,7 @@ def deleteCategory(id=None):
 def deleteDevice(id):
 	try: 
 		device = Device.query.get(id)
+		file_upload.delete_files(device, files=['image'])
 		db.session.delete(device)
 		db.session.commit() 
 	except Exception as e: 

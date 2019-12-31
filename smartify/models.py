@@ -1,4 +1,4 @@
-from . import db 
+from . import db, file_upload
 
 ##Database Schema
 
@@ -38,6 +38,7 @@ class homecategory(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(90), nullable=False)
 
+@file_upload.Model 
 class Device(db.Model):
 	def __str__(self):
 		return self.name 
@@ -59,3 +60,4 @@ class Device(db.Model):
 		backref=db.backref('devices', lazy=True))
 	rating = db.Column(db.Numeric(10,2), nullable=False)
 	narrative = db.Column(db.String(500))
+	image = file_upload.Column(db)
