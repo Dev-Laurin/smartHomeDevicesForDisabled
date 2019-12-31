@@ -43,6 +43,11 @@ def editDevice(id):
 	for h in device.homecategories: 
 		device_hc.append(h.name)
 
+	retFunc = render_template('create_device.html', po=po, deviceCat=dc, 
+		homecategories=hc, form=form, device=device, device_po=device_po, 
+		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
+
+
 	#POST request, we are saving to db 
 	if form.validate_on_submit():
 
@@ -82,22 +87,15 @@ def editDevice(id):
 				flash('Error. Device was not edited.', 'danger')
 				app.logger.info('Error. Device was not edited.')
 				app.logger.info(e)
-				return render_template('create_device.html', po=po, deviceCat=dc, 
-					homecategories=hc, form=form, device=device, device_verb=device_verb, 
-					device_po=device_po, device_cat=device_cat, device_hc=device_hc)
+				return retFunc
 
 	elif form.errors:
 		#Form validation failed 
 		flash('Device not edited, validation failed.', 'danger')
 		app.logger.info('Device not edited, validation failed.')
 		app.logger.info(form.errors)
-		return render_template('create_device.html', po=po, deviceCat=dc, 
-			homecategories=hc, form=form, device_verb=device_verb)
-
-	return render_template('create_device.html', po=po, deviceCat=dc, 
-		homecategories=hc, form=form, device=device, device_po=device_po, 
-		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
-
+		return retFunc
+	return retFunc
 
 @app.route('/createDevice', methods=["GET", "POST"])
 @app.route('/createDevice/', methods=["GET", "POST"])
@@ -114,6 +112,10 @@ def createDevice():
 	device_hc = []
 	device_cat = None  
 	device_verb="Create"
+
+	retFunc = render_template("create_device.html", po=po, deviceCat=dc, 
+		homecategories=hc, form=form, device=device, device_po=device_po, 
+		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
 	
 	#POST request, we are saving to db 
 	if form.validate_on_submit():
@@ -147,9 +149,7 @@ def createDevice():
 			flash('Error. Device was not created.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
-			return render_template('create_device.html', po=po, deviceCat=dc, 
-				homecategories=hc, form=form, device=device, device_verb=device_verb, 
-				device_po=device_po, device_cat=device_cat, device_hc=device_hc)
+			return retFunc
 
 		app.logger.info('Device created.')
 		flash('Device created.', 'success')
@@ -159,12 +159,9 @@ def createDevice():
 		flash('Device not created/edited, validation failed.', 'danger')
 		app.logger.info('Device not created, validation failed.')
 		app.logger.info(form.errors)
-		return render_template('create_device.html', po=po, deviceCat=dc, 
-			homecategories=hc, form=form, device_verb=device_verb)
+		return retFunc
 
-	return render_template('create_device.html', po=po, deviceCat=dc, 
-		homecategories=hc, form=form, device=device, device_po=device_po, 
-		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
+	return retFunc
 
 @app.route('/showDevices', methods=["POST"])
 def showDeviceOnCategory():
@@ -176,7 +173,6 @@ def showDeviceOnCategory():
 		devices = []
 	for dc in deviceCats: 
 		deviceCat = devicecategory.query.filter_by(name=dc).first()
-		homecatquery = homecategory.query.join()
 		devices.extend(Device.query.join(devicecategory, 
 			Device.category_id==devicecategory.id)
 		.filter(devicecategory.id==deviceCat.id)

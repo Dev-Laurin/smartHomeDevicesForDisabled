@@ -10,7 +10,6 @@
 		{% for c in deviceCat %}
 		  <li class="list-group-item d-flex justify-content-between align-items-center" id="{{c}}">
 		    {{c}}
-		    <!-- <span class="badge badge-primary badge-pill">14</span> -->
 		    <span class="float-right">
 				<button type="button" class="btn btn-warning" onclick="makeEditable('{{c}}', '{{c.id}}')">Edit</button>
 				<a href="/deleteCategory/{{c.id}}" type="button" class="btn btn-danger">Delete</a>
@@ -20,9 +19,9 @@
 		</ul>
 	</div> 
 	<h2> Add Category </h2>
-	<form class="needs-validation" action="/addCategory" method="post" novalidate> 
-		<input type="text" name="name" id='newCat' class="form-control" required>
-		<button type="submit" class="btn btn-primary" onclick="addCategory()">Add</button> 
+	<form class="needs-validation form-inline" action="/addCategory" method="post" novalidate> 
+		<input type="text" name="name" id='newCat' class="form-control mr-1" required/>
+		<button type="submit" class="btn btn-primary" onclick="addCategory()">Add</button>
 	</form>
 </div>
 
