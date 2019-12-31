@@ -28,33 +28,22 @@ def list():
 		categories=categories, homecategories=homecategories)
 
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
-@app.route('/createDevice', methods=["GET", "POST"])
-@app.route('/createDevice/', methods=["GET", "POST"])
-def createDevice(id=None):
-	print('in create device')
+def editDevice(id):
 	form = CreateDeviceForm()
 
 	po = paymentoccurence.query.all()
 	dc = devicecategory.query.all()
 	hc = homecategory.query.all()
 
-	device = None 
-	device_po = None 
+	device_verb="Edit"
+	device = Device.query.get_or_404(id)
+	device_po = paymentoccurence.query.get(device.payment_occurence_id)
+	device_cat = devicecategory.query.get(device.category_id)
 	device_hc = []
-	device_cat = None 
+	for h in device.homecategories: 
+		device_hc.append(h.name)
 
-	if id: 
-		device_verb="Edit"
-		device = Device.query.get_or_404(id)
-		device_po = paymentoccurence.query.get(device.payment_occurence_id)
-		device_cat = devicecategory.query.get(device.category_id)
-		device_hc = []
-		for h in device.homecategories: 
-			device_hc.append(h.name)
-	else: 
-		device_verb="Create"
-	
-
+	#POST request, we are saving to db 
 	if form.validate_on_submit():
 
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
@@ -73,8 +62,66 @@ def createDevice(id=None):
 
 			#delete previous homecategories 
 			device.homecategories = []
+	
+			try: 
+				#add homecategories to device
+				for h in request.form.getlist('homeCat[]'): 
+					hc = homecategory.query.filter_by(name=h).first()
+					#If it doesn't exist, create it 
+					if(not hc.id):
+						hc = homecategory(name=h)
+						db.session.add(hc)
+						db.session.commit()
+					device.homecategories.append(hc)
+				db.session.add(device)
+				db.session.commit()
+				app.logger.info('Device edited.')
+				flash('Device edited.', 'success')
+				return redirect(url_for('list'))
+			except Exception as e: 
+				flash('Error. Device was not edited.', 'danger')
+				app.logger.info('Error. Device was not edited.')
+				app.logger.info(e)
+				return render_template('create_device.html', po=po, deviceCat=dc, 
+					homecategories=hc, form=form, device=device, device_verb=device_verb, 
+					device_po=device_po, device_cat=device_cat, device_hc=device_hc)
 
-		else: 		
+	elif form.errors:
+		#Form validation failed 
+		flash('Device not edited, validation failed.', 'danger')
+		app.logger.info('Device not edited, validation failed.')
+		app.logger.info(form.errors)
+		return render_template('create_device.html', po=po, deviceCat=dc, 
+			homecategories=hc, form=form, device_verb=device_verb)
+
+	return render_template('create_device.html', po=po, deviceCat=dc, 
+		homecategories=hc, form=form, device=device, device_po=device_po, 
+		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
+
+
+@app.route('/createDevice', methods=["GET", "POST"])
+@app.route('/createDevice/', methods=["GET", "POST"])
+def createDevice():
+	form = CreateDeviceForm()
+
+	po = paymentoccurence.query.all()
+	dc = devicecategory.query.all()
+	hc = homecategory.query.all()
+
+	#for scope 
+	device = None 
+	device_po = None 
+	device_hc = []
+	device_cat = None  
+	device_verb="Create"
+	
+	#POST request, we are saving to db 
+	if form.validate_on_submit():
+
+		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
+		dc = devicecategory.query.filter_by(name=form.category.data).first()
+				
+		try: 
 			device = Device(name=form.name.data, 
 			description=form.description.data, 
 			price=form.price.data,
@@ -85,8 +132,6 @@ def createDevice(id=None):
 			rating=form.rating.data,
 			narrative=form.narrative.data
 			)
-				
-		try: 
 			#add homecategories to device
 			for h in request.form.getlist('homeCat[]'): 
 				hc = homecategory.query.filter_by(name=h).first()
@@ -99,14 +144,14 @@ def createDevice(id=None):
 			db.session.add(device)
 			db.session.commit()
 		except Exception as e: 
-			flash('Error. Device was not created/edited.', 'danger')
+			flash('Error. Device was not created.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
 			return render_template('create_device.html', po=po, deviceCat=dc, 
 				homecategories=hc, form=form, device=device, device_verb=device_verb, 
 				device_po=device_po, device_cat=device_cat, device_hc=device_hc)
 
-		app.logger.info('Device created/edited.')
+		app.logger.info('Device created.')
 		flash('Device created.', 'success')
 		return redirect(url_for('list'))
 	elif form.errors:
@@ -156,7 +201,7 @@ def getDevice(id=None):
 @app.route('/editDevices')
 def editDevices():
 	devices = Device.query.order_by(Device.category_id).all()
-	return render_template('editDevices.html', devices=devices)
+	return render_template('edit_devices.html', devices=devices)
 
 @app.route('/editCategories')
 def editCategories():

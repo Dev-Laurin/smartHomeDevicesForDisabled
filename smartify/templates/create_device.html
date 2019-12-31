@@ -30,7 +30,6 @@
 		    	<textarea class="form-control" name="description" id="description" rows="3" required>{{device.description}}</textarea>
 		    {% else %}
 		    	<textarea class="form-control" name="description" id="description" rows="3" required></textarea>
-		    }
 		    {% endif %}
 		    <div class="valid-feedback">
 		    	Looks good!
@@ -158,17 +157,6 @@
 	  'use strict';
 	  window.addEventListener('load', function() {
 
-	  	//check that at least one device input checkbox is selected
-		var requiredCheckboxes = $('.form-check :checkbox[required]'); 
-		requiredCheckboxes.change(function(){
-			if(requiredCheckboxes.is(':checked')){
-				requiredCheckboxes.removeAttr('required'); 
-			}
-			else {
-				requiredCheckboxes.attr('required', 'required'); 
-			}
-		})
-
 	    // Fetch all the forms we want to apply custom Bootstrap validation styles to
 	    var forms = document.getElementsByClassName('needs-validation');
 	    // Loop over them and prevent submission
@@ -212,6 +200,25 @@
 	    	var checkbox = document.getElementById(homeCatsArray[i])
 	    	checkbox.checked = true 
 	    }
+
+	    //check that at least one device input checkbox is selected
+		var requiredCheckboxes = $('.form-check :checkbox[required]');
+		//initial
+		if(requiredCheckboxes.is(':checked')){
+			requiredCheckboxes.removeAttr('required'); 
+		}
+		else{
+			requiredCheckboxes.attr('required', 'required'); 
+		}
+
+		requiredCheckboxes.change(function(){
+			if(requiredCheckboxes.is(':checked')){
+				requiredCheckboxes.removeAttr('required'); 
+			}
+			else {
+				requiredCheckboxes.attr('required', 'required'); 
+			}
+		})
 	    
 	  }, false);
 	})();
