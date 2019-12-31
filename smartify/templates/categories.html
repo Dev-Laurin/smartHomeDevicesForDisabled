@@ -1,22 +1,41 @@
 {% extends "layout.html" %}
 {% block main %}
 <div class="row">
-	<h1>Add/Delete/Edit the Device Categories</h1> 
-</div> 
-<div>
-	<form action="/editDeviceCategories" method="post"> 
-		<div class="form-group"> 
-			<ul class="list-group">
-			{% for c in deviceCat %}
-			  <li class="list-group-item d-flex justify-content-between align-items-center">
-			    {{c}}
-			    <span class="badge badge-primary badge-pill">14</span>
-			  </li>
-			{% endfor %}
-			</ul>
-		</div> 
-		<button type="submit" class="btn btn-primary">Submit</button> 
-	</form> 
+	<h1>Device Categories</h1> 
 </div>
+<div>
+	
+	<div class="form-group"> 
+		<ul class="list-group" id="categoryList">
+		{% for c in deviceCat %}
+		  <li class="list-group-item d-flex justify-content-between align-items-center" id="{{c}}">
+		    {{c}}
+		    <span class="float-right">
+				<button type="button" class="btn btn-warning" onclick="makeEditable('{{c}}', '{{c.id}}')">Edit</button>
+				<a href="/deleteCategory/{{c.id}}" type="button" class="btn btn-danger">Delete</a>
+			</span>
+		  </li>
+		{% endfor %}
+		</ul>
+	</div> 
+	<h2> Add Category </h2>
+	<form class="needs-validation form-inline" action="/addCategory" method="post" novalidate> 
+		<input type="text" name="name" id='newCat' class="form-control mr-1" required/>
+		<button type="submit" class="btn btn-primary" onclick="addCategory()">Add</button>
+	</form>
+</div>
+
+<script>
+function makeEditable(name, id){
+	var elem = document.getElementById(name); 
+	elem.innerHTML = '<form action="/editCategory/' + id + '" method="post">' +
+	 "<input type='text' name='name' value='" + elem.innerText.replace('Edit', '').replace('Delete', '').trim() + "'>" + 
+	"<button type='submit' class='btn btn-success'>Save</button></form>" +
+	'<span class="float-right">' + 
+		'<button type="button" class="btn btn-warning" onclick="makeEditable(' + id + ')">Edit</button>' + 
+		'<a href="/deleteCategory/' + id + '" type="button" class="btn btn-danger">Delete</a>' +
+		'</span>'; 
+}
+</script> 
 
 {% endblock %}
