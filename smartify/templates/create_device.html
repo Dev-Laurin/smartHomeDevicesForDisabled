@@ -54,14 +54,6 @@
 		    	Please provide a price.
 		    </div>
 		</div>
-		 <div class="form-group">
-		    <label for="narrative">Describe the rating for this device.</label>
-		    {% if device.narrative %}
-		    	<textarea class="form-control" name="narrative" id="narrative" rows="3">{{device.narrative}}</textarea>
-		    {% else %}
-		    	<textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
-		    {% endif %}
-		  </div>
 		 <div class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for='recurring_price'>Recurring $</label>
@@ -130,6 +122,14 @@
 		    	Please provide a rating.
 		    </div>
 		</div>
+		<div class="form-group">
+		    <label for="narrative">Describe the rating for this device.</label>
+		    {% if device.narrative %}
+		    	<textarea class="form-control" name="narrative" id="narrative" rows="3">{{device.narrative}}</textarea>
+		    {% else %}
+		    	<textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
+		    {% endif %}
+		  </div>
 		<p>Select all categories that apply</p> 
 		{% for homecategory in homecategories %}
 		<div class="form-check">
