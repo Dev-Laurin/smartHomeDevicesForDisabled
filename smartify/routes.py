@@ -139,8 +139,9 @@ def createDevice():
 			rating=form.rating.data,
 			narrative=form.narrative.data
 			)
+			image = request.files["image"]
 			device = file_upload.save_files(device, files={
-				"image": request.files['image']
+				"image": image
 			})
 			#add homecategories to device
 			for h in request.form.getlist('homeCat[]'): 

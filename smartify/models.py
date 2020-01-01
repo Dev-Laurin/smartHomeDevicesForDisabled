@@ -38,7 +38,7 @@ class homecategory(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(90), nullable=False)
 
-@file_upload.Model 
+@file_upload.Model
 class Device(db.Model):
 	def __str__(self):
 		return self.name 

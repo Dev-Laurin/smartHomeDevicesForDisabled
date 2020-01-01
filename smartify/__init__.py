@@ -1,10 +1,10 @@
 import os
 from flask import Flask 
-from flask_sqlalchemy import SQLAlchemy  
+from flask_sqlalchemy import SQLAlchemy 
 from flask_file_upload import FileUpload 
 
 db = SQLAlchemy()
-file_upload = FileUpload()
+file_upload = FileUpload(db=db)
 
 def create_app():
 	#create and configure the app 
@@ -12,7 +12,7 @@ def create_app():
 		template_folder="templates", static_folder="static")
 	app.config.from_envvar('APP_CONFIG_FILE')
 
-	db.init_app(app)	
+	db.init_app(app)
 	file_upload.init_app(app)	
 
 	#ensure the instance folder exists 
@@ -27,8 +27,8 @@ def create_app():
 			devicecategory, homecategory, Device, homecategories)
 
 		#initialize database -- for dev only 
-		db.drop_all()
-		db.create_all()
+		# db.drop_all()
+		# db.create_all()
 		# po = paymentoccurence(name="Once")
 		# db.session.add(po)
 		# db.session.commit()
