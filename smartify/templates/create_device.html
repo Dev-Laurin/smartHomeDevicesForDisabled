@@ -40,7 +40,7 @@
 		  </div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
-		    <label class="input-group-text" for='price'>$</label>
+		    <label class="input-group-text" for='price'>Price $</label>
 		  </div>
 		  {% if device.price %}
 		  	<input name="price" id='price' type="text" class="form-control" value="{{device.price}}" required>
@@ -54,9 +54,18 @@
 		    	Please provide a price.
 		    </div>
 		</div>
+		<div class="input-group mb-3">
+			<div class="form-check">
+			  <input class="form-check-input" type="checkbox" name="subscription_checkbox" id="subscription_checkbox" required data-toggle="collapse" data-target="#showSubscription" aria-expanded="false" aria-controls="showSubscription">
+			  <label class="form-check-label" for="subscription_checkbox">
+			    Subscription Necessary 
+			  </label>
+			</div>
+		</div>
+		<div class="collapse" id="showSubscription">
 		 <div class="input-group mb-3">
 		  <div class="input-group-prepend">
-		    <label class="input-group-text" for='recurring_price'>Recurring $</label>
+		    <label class="input-group-text" for='recurring_price'>Subscription $</label>
 		  </div>
 		  {% if device.recurring_price %}
 		  	<input name="recurring_price" id='recurring_price' value=0 type="text" value="{{device.recurring_price}}" class="form-control" required>
@@ -72,9 +81,10 @@
 		</div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
-		    <label class="input-group-text" for="payment_occurence">Payment Type</label>
+		    <label class="input-group-text" for="payment_occurence">Subscription Type</label>
 		  </div>
 		  {{ form.payment_occurence(class="custom-select", value="{{device.payment_occurence}}", id="payment_occurence") }}
+		</div>
 		</div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
