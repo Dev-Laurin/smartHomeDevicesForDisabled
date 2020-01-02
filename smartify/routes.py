@@ -68,9 +68,9 @@ def editDevice(id):
 
 			#delete previous homecategories 
 			device.homecategories = []
-
+			image = request.files['image']
 			device = file_upload.update_files(device, files={
-				"image": request.files['image']
+				"image": image 
 			})
 	
 			try: 
@@ -89,7 +89,7 @@ def editDevice(id):
 				flash('Device edited.', 'success')
 				return redirect(url_for('list'))
 			except Exception as e: 
-				flash('Error. Device was not edited.', 'danger')
+				flash('Error. Device was not edited. \n If uploading a file, it must have a filename of 16 characters or less.', 'danger')
 				app.logger.info('Error. Device was not edited.')
 				app.logger.info(e)
 				return retFunc
@@ -155,7 +155,7 @@ def createDevice():
 			db.session.add(device)
 			db.session.commit()
 		except Exception as e: 
-			flash('Error. Device was not created.', 'danger')
+			flash('Error. Device was not created. \n If uploading a file, it must have a filename of 16 characters or less.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
 			return retFunc
@@ -267,15 +267,16 @@ def deleteCategory(id=None):
 def deleteDevice(id):
 	try: 
 		device = Device.query.get(id)
-		file_upload.delete_files(device, files=['image'])
+		file_upload.delete_files(device, db=db, files=["image"])
 		db.session.delete(device)
 		db.session.commit() 
+		flash('Device successfully deleted.', 'success')
+		app.logger.info('Device deleted.')
 	except Exception as e: 
 		flash('Device could not be deleted.', 'danger')
 		app.logger.info('Device could not be deleted.')
 		app.logger.info(e)
-	flash('Device successfully deleted.', 'success')
-	app.logger.info('Device deleted.')
+	
 	return redirect(url_for('editDevices'))
 
 if __name__ == '__main__':

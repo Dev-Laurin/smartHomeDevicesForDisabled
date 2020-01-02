@@ -19,7 +19,6 @@ class CreateDeviceForm(FlaskForm):
 		validators=[InputRequired()])
 	link = StringField('link', validators=[InputRequired(), Length(7, 500, 
 		message="Hyperlink has too few or too many characters.")])
-
 	categories = devicecategory.query.all() 
 	cat = []
 	for c in categories: 

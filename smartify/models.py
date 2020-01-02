@@ -51,7 +51,6 @@ class Device(db.Model):
 	payment_occurence_id = db.Column(db.Integer, 
 		db.ForeignKey('paymentoccurence.id'))
 	link = db.Column(db.String(500), nullable=False)
-
 	category_id = db.Column(db.Integer, 
 		db.ForeignKey('devicecategory.id'),
 		nullable=False)
