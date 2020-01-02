@@ -46,7 +46,10 @@ class Device(db.Model):
 	name = db.Column(db.String(80), nullable=False)
 	description = db.Column(db.String(500), nullable=False)
 	price = db.Column(db.Float, nullable=False)
+	has_subscription = db.Column(db.Boolean, default=False, 
+		nullable=False)
 	recurring_price = db.Column(db.Float)
+	subscription_description = db.Column(db.String(500))
 	payment_occurence_id = db.Column(db.Integer, 
 		db.ForeignKey('paymentoccurence.id'))
 	link = db.Column(db.String(500), nullable=False)

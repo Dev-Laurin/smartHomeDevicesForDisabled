@@ -14,13 +14,20 @@
 		<div class="col-md-8">
         	<div class="row">
         		<div class="col-md-6 col-lg-6">
-        			<label><b>Narrative / Use Description</b><br>{{device.narrative}}</label>
-	        		<br> 
-	        		<label><b>Price: </b></label> 
-		        	{{'%0.2f' % device.price}}
-		        	
-		        	<label><b>Recurring Price: </b></label> 
-			        {{'%0.2f' % device.recurring_price}} {{device.paymentoccurence}}
+        			{% if device.narrative %}
+	        			<label><b>Narrative / Use Description</b><br>{{device.narrative}}</label>
+		        		<br> 
+		        	{% endif %}
+	        		<label><b>Price: </b></label>
+		        	${{'%0.2f' % device.price}}
+		        	<br> 
+		        	{% if device.has_subscription %}
+			        	<label><b>Subscription: </b> 
+				        ${{'%0.2f' % device.recurring_price}} {{device.paymentoccurence}}</label>
+				        <br> 
+				        <label><b>Subscription Description: </b><br>
+				        {{device.subscription_description}}</label>
+				    {% endif %}
 	        	</div> 
 	        	<div class="col-md-6 col-lg-6">
         			<label><b> Device Category: </b></label> 
