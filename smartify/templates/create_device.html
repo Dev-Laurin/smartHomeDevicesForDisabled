@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block main %}
 <div class="row">
-	<h2> {{device_verb}} Device </h2>
+	<h2> {{device.verb}} Device </h2>
 </div>
 <div>
 	<form class="needs-validation" action="/createDevice/{{device.id}}" method="post" novalidate> 
@@ -53,38 +53,67 @@
 		    <div class="invalid-feedback">
 		    	Please provide a price.
 		    </div>
-		</div>
+		</div> 
 		<div class="input-group mb-3">
 			<div class="form-check">
-			  <input class="form-check-input" type="checkbox" name="subscription_checkbox" id="subscription_checkbox" required data-toggle="collapse" data-target="#showSubscription" aria-expanded="false" aria-controls="showSubscription">
+			{% if device.has_subscription %}
+			  {{form.is_subscription(class="form-check-input", id="subscription_checkbox", 
+			  checked="{{device.has_subscription}}",
+			  **{'data-toggle':'collapse', 
+			  'data-target':'#showSubscription', 'aria-expanded':'{{device.has_subscription}}', 'aria-controls':'showSubscription'})}}
+			{% else %}
+			  {{form.is_subscription(class="form-check-input", id="subscription_checkbox", 
+			  **{'data-toggle':'collapse', 
+			  'data-target':'#showSubscription', 'aria-expanded':'{{device.has_subscription}}', 'aria-controls':'showSubscription'})}}
+			{% endif %}
 			  <label class="form-check-label" for="subscription_checkbox">
 			    Subscription Necessary 
 			  </label>
 			</div>
 		</div>
-		<div class="collapse" id="showSubscription">
-		 <div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for='recurring_price'>Subscription $</label>
-		  </div>
-		  {% if device.recurring_price %}
-		  	<input name="recurring_price" id='recurring_price' value=0 type="text" value="{{device.recurring_price}}" class="form-control" required>
-		  {% else %}
-		  	<input name="recurring_price" id='recurring_price' value=0 type="text" class="form-control" required>
-		  {% endif %}
-		  <div class="valid-feedback">
-		    	Looks good!
-		    </div> 
-		    <div class="invalid-feedback">
-		    	Please provide a reaccurring price. If none put 0.
-		    </div>
-		</div>
-		<div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for="payment_occurence">Subscription Type</label>
-		  </div>
-		  {{ form.payment_occurence(class="custom-select", value="{{device.payment_occurence}}", id="payment_occurence") }}
-		</div>
+		{% set class = "collapse" %}
+		{% if device.has_subscription %}
+			{% set class = "collapse show" %}
+		{% else %}
+			{% set class = "collapse" %}
+		{% endif %}
+		<div class="{{class}}" id="showSubscription">
+			<div class="input-group mb-3">
+			  <div class="input-group-prepend">
+			    <label class="input-group-text" for='recurring_price'>Subscription $</label>
+			  </div>
+			  {% if device.recurring_price %}
+			  	<input name="recurring_price" id='recurring_price' type="text" value="{{device.recurring_price}}" class="form-control" required>
+			  {% else %}
+			  	<input name="recurring_price" id='recurring_price' value=0 type="text" class="form-control" required>
+			  {% endif %}
+			  <div class="valid-feedback">
+			    	Looks good!
+			    </div> 
+			    <div class="invalid-feedback">
+			    	Please provide a reaccurring price. If none put 0.
+			    </div>
+			</div>
+			<div class="input-group mb-3">
+			  <div class="input-group-prepend">
+			    <label class="input-group-text" for="payment_occurence">Subscription Type</label>
+			  </div>
+			  {{ form.payment_occurence(class="custom-select", value="{{device.payment_occurence}}", id="payment_occurence") }}
+			</div>
+			<div class="form-group">
+			    <label for="subscription_description">Subscription Description</label>
+			    {% if device.subscription_description %}
+			    	<textarea class="form-control" name="subscription_description" id="subscription_description" rows="3">{{device.subscription_description}}</textarea>
+			    {% else %}
+			    	<textarea class="form-control" name="subscription_description" id="subscription_description" rows="3"></textarea>
+			    {% endif %}
+			    <div class="valid-feedback">
+			    	Looks good!
+			    </div> 
+			    <div class="invalid-feedback">
+			    	Please provide a subscription description.
+			    </div>
+			</div>
 		</div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
@@ -184,7 +213,7 @@
 	    //payment type 
 	    var select = document.getElementById('payment_occurence'); 
 	    for(var i=0; i<select.options.length; i++){
-	    	if(select.options[i].value=="{{device_po}}"){
+	    	if(select.options[i].value=="{{device.po}}"){
 	    		select.selectedIndex = i; 
 	    	}
 	    }
@@ -192,7 +221,7 @@
 	    //device control category
 	    select = document.getElementById('category'); 
 	    for(var i=0; i<select.options.length; i++){
-	    	if(select.options[i].value=="{{device_cat}}"){
+	    	if(select.options[i].value=="{{device.cat}}"){
 	    		select.selectedIndex = i; 
 	    	}
 	    }
@@ -205,7 +234,7 @@
 	    	}
 	    }
 	    //homecategories 
-	    var homeCatsArray = {{device_hc|safe}}; 
+	    var homeCatsArray = {{device.hc|safe}}; 
 	    for(var i=0; i<homeCatsArray.length; i++){
 	    	var checkbox = document.getElementById(homeCatsArray[i])
 	    	checkbox.checked = true 
