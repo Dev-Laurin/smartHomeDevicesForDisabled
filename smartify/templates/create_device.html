@@ -24,6 +24,18 @@
 			  </div>
 			</div>
 		</div> 
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for="category">Device Control Category</label>
+		  </div>
+		  {{ form.category(class="custom-select", id="category", onload="categoryLoad()") }}
+		  <div class="valid-feedback">
+		    	Looks good!
+		  </div> 
+		  <div class="invalid-feedback">
+		    Please provide a device control input category.
+		  </div>
+		</div>
 		<div class="form-group">
 		    <label for="description">Product Description</label>
 		    {% if device.description %}
@@ -54,19 +66,6 @@
 		    	Please provide a price.
 		    </div>
 		</div> 
-		<div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for='warranty_price'>Warranty Price $</label>
-		  </div>
-		  {% if device.warranty_price %}
-		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control" value="{{device.warranty_price}}">
-		  {% else %}
-		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control">
-		  {% endif %}
-		  <div class="valid-feedback">
-		    	Looks good!
-		  </div> 
-		</div>
 		<div class="input-group mb-3">
 			<div class="form-check">
 			{% if device.has_subscription %}
@@ -144,18 +143,7 @@
 		    Please provide a hyperlink to the device.
 		  </div>
 		</div>
-		<div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for="category">Device Control Category</label>
-		  </div>
-		  {{ form.category(class="custom-select", id="category", onload="categoryLoad()") }}
-		  <div class="valid-feedback">
-		    	Looks good!
-		  </div> 
-		  <div class="invalid-feedback">
-		    Please provide a device control input category.
-		  </div>
-		</div>
+		<h2>Rating</h2>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="rating">Device Rating</label>
@@ -181,7 +169,37 @@
 		    {% else %}
 		    	<textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
 		    {% endif %}
+		</div>
+		<h2>Warranty</h2>
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for='warranty_price'>Warranty Price $</label>
 		  </div>
+		  {% if device.warranty_price %}
+		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control" value="{{device.warranty_price}}">
+		  {% else %}
+		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control">
+		  {% endif %}
+		  <div class="valid-feedback">
+		    	Looks good!
+		  </div> 
+		</div>
+		<div class="form-group"> 
+			<div class="input-group mb-3">
+			  <div class="input-group-prepend">
+			  	<label class="input-group-text" for='warranty_length'>Warranty Length</label>
+			  </div>
+			  {% if device.warranty_length %}
+			  	<input type="text" id='warranty_length' name="warranty_length" class="form-control" value="{{device.warranty_length}}">
+			  {% else %}
+			  	<input type="text" id='warranty_length' name="warranty_length" class="form-control">
+			  {% endif %}
+			  <div class="valid-feedback">
+			  	Looks good! 
+			  </div>
+			</div>
+		</div> 
+		<h2>Categories</h2>
 		<p>Select all categories that apply</p> 
 		{% for homecategory in homecategories %}
 		<div class="form-check">
