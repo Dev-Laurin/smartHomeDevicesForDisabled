@@ -55,6 +55,19 @@
 		    </div>
 		</div>
 		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for='warranty_price'>Warranty Price $</label>
+		  </div>
+		  {% if device.warranty_price %}
+		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control" value="{{device.warranty_price}}">
+		  {% else %}
+		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control">
+		  {% endif %}
+		  <div class="valid-feedback">
+		    	Looks good!
+		  </div> 
+		</div>
+		<div class="input-group mb-3">
 			<div class="form-check">
 			  <input class="form-check-input" type="checkbox" name="subscription_checkbox" id="subscription_checkbox" required data-toggle="collapse" data-target="#showSubscription" aria-expanded="false" aria-controls="showSubscription">
 			  <label class="form-check-label" for="subscription_checkbox">

@@ -50,7 +50,6 @@ class Device(db.Model):
 	payment_occurence_id = db.Column(db.Integer, 
 		db.ForeignKey('paymentoccurence.id'))
 	link = db.Column(db.String(500), nullable=False)
-
 	category_id = db.Column(db.Integer, 
 		db.ForeignKey('devicecategory.id'),
 		nullable=False)
@@ -59,3 +58,5 @@ class Device(db.Model):
 		backref=db.backref('devices', lazy=True))
 	rating = db.Column(db.Numeric(10,2), nullable=False)
 	narrative = db.Column(db.String(500))
+	warranty_price = db.Column(db.Float)
+	warranty_length = db.Column(db.String(80))
