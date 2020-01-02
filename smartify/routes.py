@@ -35,18 +35,17 @@ def editDevice(id):
 	dc = devicecategory.query.all()
 	hc = homecategory.query.all()
 
-	device_verb="Edit"
 	device = Device.query.get_or_404(id)
-	device_po = paymentoccurence.query.get(device.payment_occurence_id)
-	device_cat = devicecategory.query.get(device.category_id)
-	device_hc = []
+	device.verb="Edit"
+	if device.payment_occurence_id: 
+		device.po = paymentoccurence.query.get(device.payment_occurence_id)
+	device.cat = devicecategory.query.get(device.category_id)
+	device.hc = []
 	for h in device.homecategories: 
-		device_hc.append(h.name)
+		device.hc.append(h.name)
 
-	retFunc = render_template('create_device.html', po=po, deviceCat=dc, 
-		homecategories=hc, form=form, device=device, device_po=device_po, 
-		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
-
+	retFunc = render_template('create_device.html',
+		homecategories=hc, form=form, device=device)
 
 	#POST request, we are saving to db 
 	if form.validate_on_submit():
@@ -55,15 +54,21 @@ def editDevice(id):
 		dc = devicecategory.query.filter_by(name=form.category.data).first()
 
 		if device: 
+
 			device.name = form.name.data 
 			device.description = form.description.data 
 			device.price = form.price.data 
-			device.recurring_price = form.recurring_price.data 
-			device.payment_occurence_id=po.id 
 			device.link = form.link.data 
 			device.category_id = dc.id 
 			device.rating = form.rating.data 
 			device.narrative = form.narrative.data 
+
+			if form.is_subscription.data: 
+
+				device.recurring_price = form.recurring_price.data 
+				device.payment_occurence_id=po.id 
+				device.subscription_description = form.subscription_description.data
+				device.has_subscription = form.is_subscription.data 
 
 			#delete previous homecategories 
 			device.homecategories = []
@@ -100,22 +105,12 @@ def editDevice(id):
 @app.route('/createDevice', methods=["GET", "POST"])
 @app.route('/createDevice/', methods=["GET", "POST"])
 def createDevice():
-	form = CreateDeviceForm()
+	form = CreateDeviceForm(is_subscription=False)
 
-	po = paymentoccurence.query.all()
-	dc = devicecategory.query.all()
+	device=None 
 	hc = homecategory.query.all()
-
-	#for scope 
-	device = None 
-	device_po = None 
-	device_hc = []
-	device_cat = None  
-	device_verb="Create"
-
-	retFunc = render_template("create_device.html", po=po, deviceCat=dc, 
-		homecategories=hc, form=form, device=device, device_po=device_po, 
-		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
+	retFunc = render_template("create_device.html",
+		homecategories=hc, form=form, device=device)
 	
 	#POST request, we are saving to db 
 	if form.validate_on_submit():
@@ -123,17 +118,37 @@ def createDevice():
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
 		dc = devicecategory.query.filter_by(name=form.category.data).first()
 				
-		try: 
-			device = Device(name=form.name.data, 
-			description=form.description.data, 
-			price=form.price.data,
-			recurring_price=form.recurring_price.data,
-			payment_occurence_id=po.id, 
-			link=form.link.data,
-			category_id=dc.id, 
-			rating=form.rating.data,
-			narrative=form.narrative.data
-			)
+		try:
+			#There is a subscription 
+			if form.is_subscription.data:
+
+				device = Device(name=form.name.data, 
+				description=form.description.data, 
+				price=form.price.data,
+				recurring_price=form.recurring_price.data,
+				payment_occurence_id=po.id, 
+				link=form.link.data,
+				category_id=dc.id, 
+				rating=form.rating.data,
+				narrative=form.narrative.data, 
+				subscription_description=form.subscription_description.data, 
+				has_subscription=form.is_subscription.data
+				)
+			else: 
+
+				device = Device(name=form.name.data, 
+				description=form.description.data, 
+				price=form.price.data,
+				link=form.link.data,
+				category_id=dc.id, 
+				rating=form.rating.data,
+				narrative=form.narrative.data
+				)
+
+			device.po = po.name  
+			device.cat = dc.name  
+			device.verb="Create"
+
 			#add homecategories to device
 			for h in request.form.getlist('homeCat[]'): 
 				hc = homecategory.query.filter_by(name=h).first()
@@ -145,18 +160,18 @@ def createDevice():
 				device.homecategories.append(hc)
 			db.session.add(device)
 			db.session.commit()
+			app.logger.info('Device created.')
+			flash('Device created.', 'success')
 		except Exception as e: 
 			flash('Error. Device was not created.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
 			return retFunc
 
-		app.logger.info('Device created.')
-		flash('Device created.', 'success')
 		return redirect(url_for('list'))
 	elif form.errors:
 		#Form validation failed 
-		flash('Device not created/edited, validation failed.', 'danger')
+		flash('Device not created, validation failed.', 'danger')
 		app.logger.info('Device not created, validation failed.')
 		app.logger.info(form.errors)
 		return retFunc
