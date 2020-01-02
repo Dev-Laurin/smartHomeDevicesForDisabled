@@ -101,7 +101,7 @@
 			  {{ form.payment_occurence(class="custom-select", value="{{device.payment_occurence}}", id="payment_occurence") }}
 			</div>
 			<div class="form-group">
-			    <label for="description">Subscription Description</label>
+			    <label for="subscription_description">Subscription Description</label>
 			    {% if device.subscription_description %}
 			    	<textarea class="form-control" name="subscription_description" id="subscription_description" rows="3">{{device.subscription_description}}</textarea>
 			    {% else %}
