@@ -61,3 +61,5 @@ class Device(db.Model):
 		backref=db.backref('devices', lazy=True))
 	rating = db.Column(db.Numeric(10,2), nullable=False)
 	narrative = db.Column(db.String(500))
+	warranty_price = db.Column(db.Float)
+	warranty_length = db.Column(db.String(80))

@@ -28,6 +28,9 @@ class CreateDeviceForm(FlaskForm):
 		message="Rating is invalid.")])
 	narrative = TextAreaField('narrative', validators=[Length(0, 500, 
 		message="Rating description must be less than 500 characters.")])
+	warranty_price = DecimalField('warranty_price', places=2)
+	warranty_length = StringField('warranty_length', validators=[Length(0, 80, 
+		message="Warranty length needs to be between 1 and 80 characters.")])
 	subscription_description = TextAreaField('subscription_description', validators=[Length(0, 
 		500, message="Subscription description has too many characters, max=500.")])
 	#recaptcha = RecaptchaField()

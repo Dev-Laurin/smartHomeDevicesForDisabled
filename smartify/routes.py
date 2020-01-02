@@ -62,6 +62,8 @@ def editDevice(id):
 			device.category_id = dc.id 
 			device.rating = form.rating.data 
 			device.narrative = form.narrative.data 
+			device.warranty_price = form.warranty_price.data 
+			device.warranty_length = form.warranty_length.data 
 
 			if form.is_subscription.data: 
 
@@ -131,6 +133,8 @@ def createDevice():
 				category_id=dc.id, 
 				rating=form.rating.data,
 				narrative=form.narrative.data, 
+				warranty_price=form.warranty_price.data, 
+				warranty_length=form.warranty_length.data,  
 				subscription_description=form.subscription_description.data, 
 				has_subscription=form.is_subscription.data
 				)
@@ -142,7 +146,9 @@ def createDevice():
 				link=form.link.data,
 				category_id=dc.id, 
 				rating=form.rating.data,
-				narrative=form.narrative.data
+				narrative=form.narrative.data, 
+				warranty_price=form.warranty_price.data, 
+				warranty_length=form.warranty_length.data
 				)
 
 			device.po = po.name  

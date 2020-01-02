@@ -41,6 +41,16 @@
 			        <label><b>Device Description: </b><br>{{device.description}}</label> 
 			        <br> 
 			        <label><b>Link: </b><a target="_blank" href="{{device.link}}">Link to Purchase</a></label>
+			        {% if device.warranty_price %}
+				        <label><b>Warranty Price: </b></label>
+			        	${{'%0.2f' % device.warranty_price}}
+			        	<br> 
+			        {% endif %}
+			        {% if device.warranty_length %}
+			        	<label><b>Warranty Length: </b></label>
+			        	{{device.warranty_length}}
+			        	<br> 
+			        {% endif %}
 	        	</div> 
         	</div> 
         </div> 
