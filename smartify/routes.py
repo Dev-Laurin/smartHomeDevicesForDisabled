@@ -182,11 +182,13 @@ def showDeviceOnCategory():
 		devices = []
 	for dc in deviceCats: 
 		deviceCat = devicecategory.query.filter_by(name=dc).first()
-		devices.extend(Device.query.join(devicecategory, 
-			Device.category_id==devicecategory.id)
-		.filter(devicecategory.id==deviceCat.id)
-		.filter(Device.homecategories
-			.any(homecategory.id==homeCat.id)).all())
+		device = Device.query.join(devicecategory, 
+			Device.category_id==devicecategory.id).filter(devicecategory.id==deviceCat.id).filter(Device.homecategories.any(homecategory.id==homeCat.id)).all()
+		devices.extend(device)
+
+	#Get image file urls 
+	for device in devices: 
+		device.image = file_upload.get_file_url(device, filename="image") 
 
 	return render_template('list_devices_by_category.html', 
 		devices=devices, category=homeCat.name)
@@ -195,6 +197,7 @@ def showDeviceOnCategory():
 def getDevice(id=None):
 	try: 
 		device = Device.query.get(id)
+		device.image = file_upload.get_file_url(device, filename="image") 
 	except Exception as e: 
 		flash('Device was not found.', 'danger')
 		app.logger.info("Device was not found.")
