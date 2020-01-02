@@ -14,7 +14,7 @@ jobs:
       run: |
         echo Create Virtual Environment
         python3 -m pip install --user --upgrade pip
-        sudo apt-get install python3-venv
+        sudo apt-get install python3-venv -y
         python3 -m venv env 
         echo Activate Environment
         source env/bin/activate
