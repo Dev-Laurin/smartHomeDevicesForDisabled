@@ -132,9 +132,9 @@
 		    <label class="input-group-text" for="link">Hyperlink to Purchase Device</label>
 		  </div>
 		  {% if device.link %}
-		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' value="{{device.link}}" required>
+		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' value="{{device.link}}" placeholder='https://www.google.com' required>
 		  {% else %}
-		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' required>
+		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' placeholder='https://www.google.com' required>
 		  {% endif %}
 		  <div class="valid-feedback">
 		    	Looks good!
@@ -178,7 +178,7 @@
 		  {% if device.warranty_price %}
 		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control" value="{{device.warranty_price}}">
 		  {% else %}
-		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control">
+		  	<input name="warranty_price" value=0 id='warranty_price' type="text" class="form-control">
 		  {% endif %}
 		  <div class="valid-feedback">
 		    	Looks good!
