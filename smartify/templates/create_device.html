@@ -24,18 +24,20 @@
 			  </div>
 			</div>
 		</div> 
-		<div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for="category">Device Control Category</label>
-		  </div>
-		  {{ form.category(class="custom-select", id="category", onload="categoryLoad()") }}
-		  <div class="valid-feedback">
-		    	Looks good!
-		  </div> 
-		  <div class="invalid-feedback">
-		    Please provide a device control input category.
-		  </div>
+		
+		<p>Select all categories that apply</p> 
+		{% for devicecategory in devicecategories %}
+		<div class="form-check">
+			<input class="form-check-input" type="checkbox" value="{{devicecategory.name}}" name="deviceCat[]" id="{{devicecategory.name}}" required>
+			<label class="form-check-label" for="{{devicecategory.name}}">
+				{{devicecategory.name}}
+			</label>
 		</div>
+		{% endfor %}
+		<div class="sr-only">
+			Choose at least one category. 
+		</div>  
+		<br> 
 		<div class="form-group">
 		    <label for="description">Product Description</label>
 		    {% if device.description %}
@@ -268,6 +270,13 @@
 	    var homeCatsArray = {{device.hc|safe}}; 
 	    for(var i=0; i<homeCatsArray.length; i++){
 	    	var checkbox = document.getElementById(homeCatsArray[i])
+	    	checkbox.checked = true 
+	    }
+
+	    //device categories
+	    var deviceCatsArray = {{device.dc|safe}}; 
+	    for(var i=0; i<deviceCatsArray.length; i++){
+	    	var checkbox = document.getElementById(deviceCatsArray[i])
 	    	checkbox.checked = true 
 	    }
 
