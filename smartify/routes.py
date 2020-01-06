@@ -37,7 +37,7 @@ def editDevice(id):
 	device.verb="Edit"
 	if device.payment_occurence_id: 
 		device.po = paymentoccurence.query.get(device.payment_occurence_id)
-	device.cat =[]
+	device.dc =[]
 	for d in device.devicecategories:
 		device.dc.append(d.name) 
 	device.hc = []
@@ -51,7 +51,6 @@ def editDevice(id):
 	if form.validate_on_submit():
 
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
-		dc = devicecategory.query.filter_by(name=form.category.data).first()
 
 		if device: 
 
@@ -130,7 +129,6 @@ def createDevice():
 	if form.validate_on_submit():
 
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
-		dc = devicecategory.query.filter_by(name=form.category.data).first()
 				
 		try:
 			#There is a subscription 
