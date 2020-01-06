@@ -216,7 +216,12 @@ def showDeviceOnCategory():
 			for dc in deviceCats: 
 				deviceCat = devicecategory.query.filter_by(name=dc).first()
 				devCatIDs.append(deviceCat.id)
-			devices.extend(db.session.query(Device).join(Device.homecategories).filter_by(id=homeCat.id).join(devicecategories).filter_by(devicecategory_id=devCatIDs).all())
+			devices.extend(db.session.query(Device)
+				.join(Device.homecategories)
+				.filter_by(id=homeCat.id)
+				.join(Device.devicecategories)
+				.filter(devicecategory.id.in_(devCatIDs))
+				.all())
 	except Exception as e: 
 				flash('Filtering by category failed. Contact site admin.', 'danger')
 				app.logger.info('Filtering by category failed.')
