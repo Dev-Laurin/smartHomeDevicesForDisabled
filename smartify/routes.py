@@ -13,11 +13,16 @@ def list():
 	categories = devicecategory.query.all()
 	devices = Device.query.all() 
 	homecategories = homecategory.query.all()
+	hc = []
+	for h in homecategories:
+		h.image = file_upload.get_file_url(h, filename="image") 
+		if h.image.find("None") != -1: 
+			h.image = None 
+		hc.append(h)
 
 	#Refiltering devices
 	if request.method == 'POST':
 		#find all the compatible devices
-		
 		deviceCats = request.form.getlist('inputCat[]')
 		if deviceCats: 
 			devices = []
@@ -26,7 +31,7 @@ def list():
 			devices.extend(devicesFound)
 
 	return render_template('list.html', devices=devices, 
-		categories=categories, homecategories=homecategories)
+		categories=categories, homecategories=hc)
 
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
 def editDevice(id):
@@ -262,7 +267,11 @@ def editDevices():
 @app.route('/editHomeCategories')
 def editHomeCategories():
 	hc = homecategory.query.all()
-	return render_template('homecategories.html', categories=hc)
+	cats = []
+	for h in hc: 
+		h.image = file_upload.get_file_url(h, filename="image")
+		cats.append(h)
+	return render_template('homecategories.html', categories=cats)
 
 @app.route('/editHomeCategory/<id>', methods=["POST"])
 def editHomeCategory(id):
@@ -271,9 +280,30 @@ def editHomeCategory(id):
 		try: 
 			cat = homecategory.query.get(id)
 			cat.name = form.name.data
-			db.session.add(cat)
-			db.session.commit()
-			flash('Category edited.', 'success')
+			image = request.files['image'] 
+			#if we are uploading optional image 
+			if image:
+				#if length is too long, tell user 
+				if len(image.filename) < 16: 
+					try:  #has this had an image before? 
+						if cat.image: 
+							cat = file_upload.update_files(cat, files={
+								"image": image 
+							})
+					except Exception as e:  
+						cat = file_upload.save_files(cat, files={
+							"image": image 
+						})
+					db.session.add(cat)
+					db.session.commit()
+					flash('Category edited.', 'success')
+				else: 
+					flash('Filename is too long. 16 characters or less only.', 'danger')
+					app.logger.info('Filename is too long. 16 characters or less only.')
+			else: 
+				db.session.add(cat)
+				db.session.commit()
+				flash('Category edited.', 'success')
 		except Exception as e: 
 			flash('Editing category failed.', 'danger')
 			app.logger.info('Editing category failed (db).')
@@ -287,8 +317,13 @@ def editHomeCategory(id):
 def addHomeCategory():
 	form = AddCategoryForm()
 	if form.validate_on_submit(): 
-		hc = homecategory(name=form.name.data)
 		try: 
+			hc = homecategory(name=form.name.data)
+			image = request.files["image"]
+			if image: 
+				hc = file_upload.save_files(hc, files={
+					"image": image
+				})
 			db.session.add(hc)
 			db.session.commit()
 			flash("Category created.", 'success')
@@ -306,6 +341,12 @@ def addHomeCategory():
 def deleteHomeCategory(id=None):
 	try: 
 		hc = homecategory.query.get(id)
+		try: 
+			file_upload.delete_files(hc, files=["image"])
+		except Exception as e: 
+			#image probably doesn't exist -- problem solved.
+			app.logger.info("Image doesn't exist?")
+			app.logger.info(e)
 		db.session.delete(hc)
 		db.session.commit() 
 		app.logger.info('Category deleted.')

@@ -66,6 +66,13 @@ def dev_db():
 		price=199.95, recurring_price=0.00, payment_occurence_id=po.id, 
 		link="http://www.amazon.com/gp/product/B014H2P4KW?redirect=true&ref_=s9_acss_bw_cg_ESHPhili_4a1",
 		rating=3, narrative="Gives you the ability to activate lights with voice commands.")
+	# from werkzeug.datastructures import FileStorage 
+	# image = open('/home/laurin/Projects/smartHomeDevicesForDisabled/smartify/static/homecategory/1/binder.png', 'rb')
+	# image = FileStorage(image, filename="binder.png")
+	# device = file_upload.save_files(device, files={
+	# 			"image": image
+	# 		})
+	device.image = None 
 	device.devicecategories.append(dct)
 	device.homecategories.append(hc)
 	db.session.add(device)
@@ -75,6 +82,10 @@ def dev_db():
 		price=299.99, recurring_price=0.00, payment_occurence_id=po.id, 
 		link="https://www.brilliant.tech/products/brilliant-control-two-switch-smart-lighting-smart-home-control?variant=white",
 		rating=4.7, narrative="Gives you the ability to activate lights via a phone app.")
+	# device = file_upload.save_files(device, files={
+	# 			"image": image
+	# 		})
+	device.image = None 
 	device.devicecategories.append(dcv)
 	device.devicecategories.append(dct)
 	device.homecategories.append(hcs)
@@ -85,6 +96,10 @@ def dev_db():
 		price=99.99, recurring_price=17.00, payment_occurence_id=pom.id, 
 		link="https://shop.ring.com/collections/video-doorbells//products/video-doorbell",
 		rating=4.7, narrative="Gives you the ability to activate lights via a phone app.")
+	device.image = None 
+	# device = file_upload.save_files(device, files={
+	# 			"image": image
+	# 		})
 	device.devicecategories.append(dcs)
 	device.homecategories.append(hcd)
 	db.session.add(device)
