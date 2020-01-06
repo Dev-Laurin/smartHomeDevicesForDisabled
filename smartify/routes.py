@@ -245,6 +245,64 @@ def editDevices():
 	devices = Device.query.all()
 	return render_template('edit_devices.html', devices=devices)
 
+@app.route('/editHomeCategories')
+def editHomeCategories():
+	hc = homecategory.query.all()
+	return render_template('homecategories.html', categories=hc)
+
+@app.route('/editHomeCategory/<id>', methods=["POST"])
+def editHomeCategory(id):
+	form = EditCategoryForm()
+	if form.validate_on_submit():
+		try: 
+			cat = homecategory.query.get(id)
+			cat.name = form.name.data
+			db.session.add(cat)
+			db.session.commit()
+			flash('Category edited.', 'success')
+		except Exception as e: 
+			flash('Editing category failed.', 'danger')
+			app.logger.info('Editing category failed (db).')
+			app.logger.info(e)
+	else: 
+		flash("Category could not be edited. Contact developer.", 'danger')
+		app.logger.info(form.errors)
+	return redirect(url_for('editHomeCategories'))
+
+@app.route('/addHomeCategory', methods=["GET", "POST"])
+def addHomeCategory():
+	form = AddCategoryForm()
+	if form.validate_on_submit(): 
+		hc = homecategory(name=form.name.data)
+		try: 
+			db.session.add(hc)
+			db.session.commit()
+			flash("Category created.", 'success')
+			app.logger.info("Category created.")
+		except Exception as e: 
+			flash("Category could not be created.", 'danger')
+			app.logger.info('Category could not be created in db.')
+			app.logger.info(e)
+	elif(form.errors):
+		flash('Error adding home category.', 'danger')
+		app.logger.info(form.errors)
+	return redirect(url_for('editHomeCategories'))
+
+@app.route('/deleteHomeCategory/<id>')
+def deleteHomeCategory(id=None):
+	try: 
+		hc = homecategory.query.get(id)
+		db.session.delete(hc)
+		db.session.commit() 
+		app.logger.info('Category deleted.')
+		flash('Category successfully deleted.', 'success')
+	except Exception as e: 
+		flash('Category could not be deleted. There are still devices that use this category.', 'danger')
+		app.logger.info('Device category could not be deleted.')
+		app.logger.info(e)
+	
+	return redirect(url_for('editHomeCategories'))
+
 @app.route('/editCategories')
 def editCategories():
 	deviceCat = devicecategory.query.all()
