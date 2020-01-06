@@ -3,7 +3,7 @@ from flask import (Flask, render_template, request,
 	url_for, redirect, flash)
 from flask import current_app as app 
 from .models import (db, Device, devicecategory, paymentoccurence, 
-	homecategory, homecategories) 
+	homecategory, homecategories, devicecategories) 
 from .forms import CreateDeviceForm, AddCategoryForm, EditCategoryForm
 
 #Routing 
@@ -30,8 +30,6 @@ def list():
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
 def editDevice(id):
 	form = CreateDeviceForm()
-
-	po = paymentoccurence.query.all()
 	dc = devicecategory.query.all()
 	hc = homecategory.query.all()
 
@@ -39,19 +37,20 @@ def editDevice(id):
 	device.verb="Edit"
 	if device.payment_occurence_id: 
 		device.po = paymentoccurence.query.get(device.payment_occurence_id)
-	device.cat = devicecategory.query.get(device.category_id)
+	device.dc =[]
+	for d in device.devicecategories:
+		device.dc.append(d.name) 
 	device.hc = []
 	for h in device.homecategories: 
 		device.hc.append(h.name)
 
 	retFunc = render_template('create_device.html',
-		homecategories=hc, form=form, device=device)
+		homecategories=hc, devicecategories=dc, form=form, device=device)
 
 	#POST request, we are saving to db 
 	if form.validate_on_submit():
 
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
-		dc = devicecategory.query.filter_by(name=form.category.data).first()
 
 		if device: 
 
@@ -59,7 +58,6 @@ def editDevice(id):
 			device.description = form.description.data 
 			device.price = form.price.data 
 			device.link = form.link.data 
-			device.category_id = dc.id 
 			device.rating = form.rating.data 
 			device.narrative = form.narrative.data 
 			device.warranty_price = form.warranty_price.data 
@@ -74,6 +72,7 @@ def editDevice(id):
 
 			#delete previous homecategories 
 			device.homecategories = []
+			device.devicecategories = []
 	
 			try: 
 				#add homecategories to device
@@ -85,6 +84,17 @@ def editDevice(id):
 						db.session.add(hc)
 						db.session.commit()
 					device.homecategories.append(hc)
+
+				#add devicecategories to device
+				for d in request.form.getlist('deviceCat[]'): 
+					dc = devicecategory.query.filter_by(name=d).first()
+					#If it doesn't exist, create it 
+					if(not dc.id):
+						dc = devicecategory(name=d)
+						db.session.add(dc)
+						db.session.commit()
+					device.devicecategories.append(dc)
+
 				db.session.add(device)
 				db.session.commit()
 				app.logger.info('Device edited.')
@@ -111,14 +121,14 @@ def createDevice():
 
 	device=None 
 	hc = homecategory.query.all()
+	dc = devicecategory.query.all() 
 	retFunc = render_template("create_device.html",
-		homecategories=hc, form=form, device=device)
+		homecategories=hc, devicecategories=dc, form=form, device=device)
 	
 	#POST request, we are saving to db 
 	if form.validate_on_submit():
 
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
-		dc = devicecategory.query.filter_by(name=form.category.data).first()
 				
 		try:
 			#There is a subscription 
@@ -130,7 +140,6 @@ def createDevice():
 				recurring_price=form.recurring_price.data,
 				payment_occurence_id=po.id, 
 				link=form.link.data,
-				category_id=dc.id, 
 				rating=form.rating.data,
 				narrative=form.narrative.data, 
 				warranty_price=form.warranty_price.data, 
@@ -144,15 +153,13 @@ def createDevice():
 				description=form.description.data, 
 				price=form.price.data,
 				link=form.link.data,
-				category_id=dc.id, 
 				rating=form.rating.data,
 				narrative=form.narrative.data, 
 				warranty_price=form.warranty_price.data, 
 				warranty_length=form.warranty_length.data
 				)
 
-			device.po = po.name  
-			device.cat = dc.name  
+			device.po = po.name    
 			device.verb="Create"
 
 			#add homecategories to device
@@ -164,6 +171,15 @@ def createDevice():
 					db.session.add(hc)
 					db.session.commit()
 				device.homecategories.append(hc)
+			#add devicecategories to device
+			for d in request.form.getlist('deviceCat[]'): 
+				dc = devicecategory.query.filter_by(name=d).first()
+				#If it doesn't exist, create it 
+				if(not dc.id):
+					dc = devicecategory(name=d)
+					db.session.add(dc)
+					db.session.commit()
+				device.devicecategories.append(dc)
 			db.session.add(device)
 			db.session.commit()
 			app.logger.info('Device created.')
@@ -186,19 +202,28 @@ def createDevice():
 
 @app.route('/showDevices', methods=["POST"])
 def showDeviceOnCategory():
-	#get devices with compatible home categories
-	homeCat = homecategory.query.filter_by(name=request.form.get('homecategory')).first()
-	devices = Device.query.filter(Device.homecategories.any(name=homeCat.name)).all()
-	deviceCats = request.form.getlist('inputCat[]')	
-	if deviceCats: 
-		devices = []
-	for dc in deviceCats: 
-		deviceCat = devicecategory.query.filter_by(name=dc).first()
-		devices.extend(Device.query.join(devicecategory, 
-			Device.category_id==devicecategory.id)
-		.filter(devicecategory.id==deviceCat.id)
-		.filter(Device.homecategories
-			.any(homecategory.id==homeCat.id)).all())
+	try: 
+		#get devices with compatible home categories
+		homeCat = homecategory.query.filter_by(name=request.form.get('homecategory')).first()
+		devices = Device.query.filter(Device.homecategories
+				.any(name=homeCat.name)).all()
+		deviceCats = request.form.getlist('inputCat[]')	
+		devCatIDs = []
+		if deviceCats: 
+			devices = []
+			for dc in deviceCats: 
+				deviceCat = devicecategory.query.filter_by(name=dc).first()
+				devCatIDs.append(deviceCat.id)
+			devices.extend(db.session.query(Device)
+				.join(Device.homecategories)
+				.filter_by(id=homeCat.id)
+				.join(Device.devicecategories)
+				.filter(devicecategory.id.in_(devCatIDs))
+				.all())
+	except Exception as e: 
+				flash('Filtering by category failed. Contact site admin.', 'danger')
+				app.logger.info('Filtering by category failed.')
+				app.logger.info(e)
 
 	return render_template('list_devices_by_category.html', 
 		devices=devices, category=homeCat.name)
@@ -217,7 +242,7 @@ def getDevice(id=None):
 
 @app.route('/editDevices')
 def editDevices():
-	devices = Device.query.order_by(Device.category_id).all()
+	devices = Device.query.all()
 	return render_template('edit_devices.html', devices=devices)
 
 @app.route('/editCategories')

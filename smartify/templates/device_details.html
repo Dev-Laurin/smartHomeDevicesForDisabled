@@ -30,8 +30,13 @@
 				    {% endif %}
 	        	</div> 
 	        	<div class="col-md-6 col-lg-6">
-        			<label><b> Device Category: </b></label> 
-			        {{device.devicecategory}}
+        			<label><b> Device Categories: </b></label> 
+			        {% for i in range(device.devicecategories|length) %}
+		        		{{device.devicecategories[i]}}
+		        		{% if i + 1 < (device.devicecategories|length) %}
+		        		, 
+		        		{% endif %}
+		        	{% endfor %}
 			        <br>
 			   
 		        	<label><b>Device Rating: </b></label> 

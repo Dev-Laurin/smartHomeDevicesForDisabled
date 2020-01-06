@@ -1,37 +1,20 @@
 {% extends "layout.html" %}
 {% block main %}
 <div class="container">
+	<h1> Devices </h1>
 	<ul class="list-group">
 	<!-- Home Category -->
-		{% set rows = (devices|length) %}
-		{% for row in range(rows) %}
-			{% if devices[row].devicecategory.name == devices[row - 1].devicecategory.name %}
-			<li class="list-group-item">
-		    	<a href="/getDevice/{{devices[row].id}}">
-		    		{{devices[row].name}}
-				</a>
-				<div class="float-right">
-					<a href="/createDevice/{{devices[row].id}}" type="button" class="btn btn-warning">Edit</a>
-					<a href="/deleteDevice/{{devices[row].id}}" type="button" class="btn btn-danger">Delete</a>
-				</div>
-		    </li>
-		    {% else %}
-		    	<li class="list-group-item">
-		    		<h3>{{ devices[row].devicecategory.name }}</h3>
-		    	</li>
-		    	<li class="list-group-item">
-			    	<a href="/getDevice/{{devices[row].id}}">
-			    		{{devices[row].name}}
-					</a>
-					<div class="float-right">
-						<a href="/createDevice/{{devices[row].id}}" type="button" class="btn btn-warning">Edit</a>
-						<a href="/deleteDevice/{{devices[row].id}}" type="button" class="btn btn-danger">Delete</a>
-					</div>
-					
-		    	</li>
-		    {% endif %}
-
-		{% endfor %}
+	{% for device in devices|sort(attribute='name') %}
+		<li class="list-group-item">
+	    	<a href="/getDevice/{{device.id}}">
+	    		{{device.name}}
+			</a>
+			<div class="float-right">
+				<a href="/createDevice/{{device.id}}" type="button" class="btn btn-warning">Edit</a>
+				<a href="/deleteDevice/{{device.id}}" type="button" class="btn btn-danger">Delete</a>
+			</div>
+	    </li>
+{% endfor %}
 	</ul>
 </div>
 

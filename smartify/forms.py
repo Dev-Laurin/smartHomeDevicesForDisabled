@@ -19,11 +19,6 @@ class CreateDeviceForm(FlaskForm):
 	link = StringField('link', validators=[InputRequired(), Length(7, 500, 
 		message="Hyperlink has too few or too many characters.")])
 	is_subscription = BooleanField()
-	categories = devicecategory.query.all() 
-	cat = []
-	for c in categories: 
-		cat.append((c.name, c.name))
-	category = SelectField('device_category', choices=cat, validators=[InputRequired()])
 	rating = DecimalField('rating', validators=[InputRequired(), NumberRange(min=0, max=5, 
 		message="Rating is invalid.")])
 	narrative = TextAreaField('narrative', validators=[Length(0, 500, 
