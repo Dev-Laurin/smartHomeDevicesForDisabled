@@ -20,7 +20,8 @@ def create_app():
 
 	with app.app_context():
 
-#		dev_db()
+		
+		#dev_db()
 # #---------------------------------------
 
 		from . import routes 
@@ -49,8 +50,8 @@ def dev_db():
 	dcv = devicecategory(name="Voice")
 	db.session.add(dcv)
 	db.session.commit()
-	hc = homecategory(name="Security")
-	db.session.add(hc)
+	hcs = homecategory(name="Security")
+	db.session.add(hcs)
 	db.session.commit()
 	hcd = homecategory(name="Door")
 	db.session.add(hcd)
@@ -73,7 +74,8 @@ def dev_db():
 		link="https://www.brilliant.tech/products/brilliant-control-two-switch-smart-lighting-smart-home-control?variant=white",
 		rating=4.7, narrative="Gives you the ability to activate lights via a phone app.")
 	device.devicecategories.append(dcv)
-	device.homecategories.append(hc)
+	device.devicecategories.append(dct)
+	device.homecategories.append(hcs)
 	db.session.add(device)
 	db.session.commit()
 	device = Device(name="Ring Doorbell Video",

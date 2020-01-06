@@ -210,15 +210,13 @@ def showDeviceOnCategory():
 		devices = Device.query.filter(Device.homecategories
 				.any(name=homeCat.name)).all()
 		deviceCats = request.form.getlist('inputCat[]')	
+		devCatIDs = []
 		if deviceCats: 
 			devices = []
-		for dc in deviceCats: 
-			deviceCat = devicecategory.query.filter_by(name=dc).first()
-			query = db.session.query(Device).join(Device.homecategories).filter(homecategory.id==homeCat.id).join(devicecategories).filter(devicecategory.id==deviceCat.id).all()	
-			print(query)
-			devices.extend(query)
-			print(devices)
-
+			for dc in deviceCats: 
+				deviceCat = devicecategory.query.filter_by(name=dc).first()
+				devCatIDs.append(deviceCat.id)
+			devices.extend(db.session.query(Device).join(Device.homecategories).filter_by(id=homeCat.id).join(devicecategories).filter_by(devicecategory_id=devCatIDs).all())
 	except Exception as e: 
 				flash('Filtering by category failed. Contact site admin.', 'danger')
 				app.logger.info('Filtering by category failed.')
@@ -241,7 +239,7 @@ def getDevice(id=None):
 
 @app.route('/editDevices')
 def editDevices():
-	devices = Device.query.order_by(Device.category_id).all()
+	devices = Device.query.all()
 	return render_template('edit_devices.html', devices=devices)
 
 @app.route('/editCategories')
