@@ -27,7 +27,12 @@
 		        	${{'%0.2f' % devices[index.foo].price}}
 		        	<br> 
 		        	<label><b>Controlled by: </b></label> 
-		        	{{devices[index.foo].devicecategory}}
+		        	{% for i in range(devices[index.foo].devicecategories|length) %}
+		        		{{devices[index.foo].devicecategories[i]}}
+		        		{% if i + 1 < (devices[index.foo].devicecategories|length) %}
+		        		, 
+		        		{% endif %}
+		        	{% endfor %}
 		        </p>
 			  </div>
 			</a>

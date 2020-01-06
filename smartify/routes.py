@@ -3,7 +3,7 @@ from flask import (Flask, render_template, request,
 	url_for, redirect, flash)
 from flask import current_app as app 
 from .models import (db, Device, devicecategory, paymentoccurence, 
-	homecategory, homecategories) 
+	homecategory, homecategories, devicecategories) 
 from .forms import CreateDeviceForm, AddCategoryForm, EditCategoryForm
 from . import file_upload
 
@@ -31,43 +31,50 @@ def list():
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
 def editDevice(id):
 	form = CreateDeviceForm()
-
-	po = paymentoccurence.query.all()
 	dc = devicecategory.query.all()
 	hc = homecategory.query.all()
 
-	device_verb="Edit"
 	device = Device.query.get_or_404(id)
-	device_po = paymentoccurence.query.get(device.payment_occurence_id)
-	device_cat = devicecategory.query.get(device.category_id)
-	device_hc = []
+	device.verb="Edit"
+	if device.payment_occurence_id: 
+		device.po = paymentoccurence.query.get(device.payment_occurence_id)
+	device.dc =[]
+	for d in device.devicecategories:
+		device.dc.append(d.name) 
+	device.hc = []
 	for h in device.homecategories: 
-		device_hc.append(h.name)
+		device.hc.append(h.name)
 
-	retFunc = render_template('create_device.html', po=po, deviceCat=dc, 
-		homecategories=hc, form=form, device=device, device_po=device_po, 
-		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
-
+	retFunc = render_template('create_device.html',
+		homecategories=hc, devicecategories=dc, form=form, device=device)
 
 	#POST request, we are saving to db 
 	if form.validate_on_submit():
 
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
-		dc = devicecategory.query.filter_by(name=form.category.data).first()
 
 		if device: 
+
 			device.name = form.name.data 
 			device.description = form.description.data 
 			device.price = form.price.data 
-			device.recurring_price = form.recurring_price.data 
-			device.payment_occurence_id=po.id 
 			device.link = form.link.data 
-			device.category_id = dc.id 
 			device.rating = form.rating.data 
 			device.narrative = form.narrative.data 
+			device.warranty_price = form.warranty_price.data 
+			device.warranty_length = form.warranty_length.data 
+
+			if form.is_subscription.data: 
+
+				device.recurring_price = form.recurring_price.data 
+				device.payment_occurence_id=po.id 
+				device.subscription_description = form.subscription_description.data
+				device.has_subscription = form.is_subscription.data 
 
 			#delete previous homecategories 
 			device.homecategories = []
+			device.devicecategories = []
+
 			image = request.files['image']
 			device = file_upload.update_files(device, files={
 				"image": image 
@@ -83,6 +90,17 @@ def editDevice(id):
 						db.session.add(hc)
 						db.session.commit()
 					device.homecategories.append(hc)
+
+				#add devicecategories to device
+				for d in request.form.getlist('deviceCat[]'): 
+					dc = devicecategory.query.filter_by(name=d).first()
+					#If it doesn't exist, create it 
+					if(not dc.id):
+						dc = devicecategory(name=d)
+						db.session.add(dc)
+						db.session.commit()
+					device.devicecategories.append(dc)
+
 				db.session.add(device)
 				db.session.commit()
 				app.logger.info('Device edited.')
@@ -105,44 +123,55 @@ def editDevice(id):
 @app.route('/createDevice', methods=["GET", "POST"])
 @app.route('/createDevice/', methods=["GET", "POST"])
 def createDevice():
-	form = CreateDeviceForm()
+	form = CreateDeviceForm(is_subscription=False)
 
-	po = paymentoccurence.query.all()
-	dc = devicecategory.query.all()
+	device=None 
 	hc = homecategory.query.all()
-
-	#for scope 
-	device = None 
-	device_po = None 
-	device_hc = []
-	device_cat = None  
-	device_verb="Create"
-
-	retFunc = render_template("create_device.html", po=po, deviceCat=dc, 
-		homecategories=hc, form=form, device=device, device_po=device_po, 
-		device_cat=device_cat, device_verb=device_verb, device_hc=device_hc)
+	dc = devicecategory.query.all() 
+	retFunc = render_template("create_device.html",
+		homecategories=hc, devicecategories=dc, form=form, device=device)
 	
 	#POST request, we are saving to db 
 	if form.validate_on_submit():
 
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
-		dc = devicecategory.query.filter_by(name=form.category.data).first()
 				
-		try: 
-			device = Device(name=form.name.data, 
-			description=form.description.data, 
-			price=form.price.data,
-			recurring_price=form.recurring_price.data,
-			payment_occurence_id=po.id, 
-			link=form.link.data,
-			category_id=dc.id, 
-			rating=form.rating.data,
-			narrative=form.narrative.data
-			)
+		try:
+			#There is a subscription 
+			if form.is_subscription.data:
+
+				device = Device(name=form.name.data, 
+				description=form.description.data, 
+				price=form.price.data,
+				recurring_price=form.recurring_price.data,
+				payment_occurence_id=po.id, 
+				link=form.link.data,
+				rating=form.rating.data,
+				narrative=form.narrative.data, 
+				warranty_price=form.warranty_price.data, 
+				warranty_length=form.warranty_length.data,  
+				subscription_description=form.subscription_description.data, 
+				has_subscription=form.is_subscription.data
+				)
+			else: 
+
+				device = Device(name=form.name.data, 
+				description=form.description.data, 
+				price=form.price.data,
+				link=form.link.data,
+				rating=form.rating.data,
+				narrative=form.narrative.data, 
+				warranty_price=form.warranty_price.data, 
+				warranty_length=form.warranty_length.data
+				)
+
+			device.po = po.name    
+			device.verb="Create"
 			image = request.files["image"]
 			device = file_upload.save_files(device, files={
 				"image": image
 			})
+
 			#add homecategories to device
 			for h in request.form.getlist('homeCat[]'): 
 				hc = homecategory.query.filter_by(name=h).first()
@@ -152,20 +181,29 @@ def createDevice():
 					db.session.add(hc)
 					db.session.commit()
 				device.homecategories.append(hc)
+			#add devicecategories to device
+			for d in request.form.getlist('deviceCat[]'): 
+				dc = devicecategory.query.filter_by(name=d).first()
+				#If it doesn't exist, create it 
+				if(not dc.id):
+					dc = devicecategory(name=d)
+					db.session.add(dc)
+					db.session.commit()
+				device.devicecategories.append(dc)
 			db.session.add(device)
 			db.session.commit()
+			app.logger.info('Device created.')
+			flash('Device created.', 'success')
 		except Exception as e: 
 			flash('Error. Device was not created. \n If uploading a file, it must have a filename of 16 characters or less.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
 			return retFunc
 
-		app.logger.info('Device created.')
-		flash('Device created.', 'success')
 		return redirect(url_for('list'))
 	elif form.errors:
 		#Form validation failed 
-		flash('Device not created/edited, validation failed.', 'danger')
+		flash('Device not created, validation failed.', 'danger')
 		app.logger.info('Device not created, validation failed.')
 		app.logger.info(form.errors)
 		return retFunc
@@ -174,24 +212,32 @@ def createDevice():
 
 @app.route('/showDevices', methods=["POST"])
 def showDeviceOnCategory():
-	#get devices with compatible home categories
-	homeCat = homecategory.query.filter_by(name=request.form.get('homecategory')).first()
-	devices = Device.query.filter(Device.homecategories.any(name=homeCat.name)).all()
-	deviceCats = request.form.getlist('inputCat[]')	
-	if deviceCats: 
-		devices = []
-	for dc in deviceCats: 
-		deviceCat = devicecategory.query.filter_by(name=dc).first()
-		device = Device.query.join(devicecategory, 
-			Device.category_id==devicecategory.id).filter(devicecategory.id==deviceCat.id).filter(Device.homecategories.any(homecategory.id==homeCat.id)).all()
-		devices.extend(device)
 
-	#Get image file urls 
-	for device in devices: 
-		device.image = file_upload.get_file_url(device, filename="image") 
-
-	return render_template('list_devices_by_category.html', 
-		devices=devices, category=homeCat.name)
+	try: 
+		#get devices with compatible home categories
+		homeCat = homecategory.query.filter_by(name=request.form.get('homecategory')).first()
+		devices = Device.query.filter(Device.homecategories
+				.any(name=homeCat.name)).all()
+		deviceCats = request.form.getlist('inputCat[]')	
+		devCatIDs = []
+		if deviceCats: 
+			devices = []
+			for dc in deviceCats: 
+				deviceCat = devicecategory.query.filter_by(name=dc).first()
+				devCatIDs.append(deviceCat.id)
+			devices.extend(db.session.query(Device)
+				.join(Device.homecategories)
+				.filter_by(id=homeCat.id)
+				.join(Device.devicecategories)
+				.filter(devicecategory.id.in_(devCatIDs))
+				.all())
+		#Get image file urls 
+		for device in devices: 
+			device.image = file_upload.get_file_url(device, filename="image") 
+	except Exception as e: 
+				flash('Filtering by category failed. Contact site admin.', 'danger')
+				app.logger.info('Filtering by category failed.')
+				app.logger.info(e)
 
 @app.route('/getDevice/<id>')
 def getDevice(id=None):
@@ -208,7 +254,7 @@ def getDevice(id=None):
 
 @app.route('/editDevices')
 def editDevices():
-	devices = Device.query.order_by(Device.category_id).all()
+	devices = Device.query.all()
 	return render_template('edit_devices.html', devices=devices)
 
 @app.route('/editCategories')

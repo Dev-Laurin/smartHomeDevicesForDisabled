@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block main %}
 <div class="row">
-	<h2> {{device_verb}} Device </h2>
+	<h2> {{device.verb}} Device </h2>
 </div>
 <div>
 	<form class="needs-validation" enctype="multipart/form-data" action="/createDevice/{{device.id}}" method="post" novalidate> 
@@ -24,6 +24,20 @@
 			  </div>
 			</div>
 		</div> 
+		
+		<p>Select all categories that apply</p> 
+		{% for devicecategory in devicecategories %}
+		<div class="form-check">
+			<input class="form-check-input" type="checkbox" value="{{devicecategory.name}}" name="deviceCat[]" id="{{devicecategory.name}}" required>
+			<label class="form-check-label" for="{{devicecategory.name}}">
+				{{devicecategory.name}}
+			</label>
+		</div>
+		{% endfor %}
+		<div class="sr-only">
+			Choose at least one category. 
+		</div>  
+		<br> 
 		<div class="form-group">
 		    <label for="description">Product Description</label>
 		    {% if device.description %}
@@ -40,7 +54,7 @@
 		  </div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
-		    <label class="input-group-text" for='price'>$</label>
+		    <label class="input-group-text" for='price'>Price $</label>
 		  </div>
 		  {% if device.price %}
 		  	<input name="price" id='price' type="text" class="form-control" value="{{device.price}}" required>
@@ -53,45 +67,76 @@
 		    <div class="invalid-feedback">
 		    	Please provide a price.
 		    </div>
-		</div>
-		 <div class="form-group">
-		    <label for="narrative">Describe the rating for this device.</label>
-		    {% if device.narrative %}
-		    	<textarea class="form-control" name="narrative" id="narrative" rows="3">{{device.narrative}}</textarea>
-		    {% else %}
-		    	<textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
-		    {% endif %}
-		  </div>
-		 <div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for='recurring_price'>Recurring $</label>
-		  </div>
-		  {% if device.recurring_price %}
-		  	<input name="recurring_price" id='recurring_price' value=0 type="text" value="{{device.recurring_price}}" class="form-control" required>
-		  {% else %}
-		  	<input name="recurring_price" id='recurring_price' value=0 type="text" class="form-control" required>
-		  {% endif %}
-		  <div class="valid-feedback">
-		    	Looks good!
-		    </div> 
-		    <div class="invalid-feedback">
-		    	Please provide a reaccurring price. If none put 0.
-		    </div>
-		</div>
+		</div> 
 		<div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for="payment_occurence">Payment Type</label>
-		  </div>
-		  {{ form.payment_occurence(class="custom-select", value="{{device.payment_occurence}}", id="payment_occurence") }}
+			<div class="form-check">
+			{% if device.has_subscription %}
+			  {{form.is_subscription(class="form-check-input", id="subscription_checkbox", 
+			  checked="{{device.has_subscription}}",
+			  **{'data-toggle':'collapse', 
+			  'data-target':'#showSubscription', 'aria-expanded':'{{device.has_subscription}}', 'aria-controls':'showSubscription'})}}
+			{% else %}
+			  {{form.is_subscription(class="form-check-input", id="subscription_checkbox", 
+			  **{'data-toggle':'collapse', 
+			  'data-target':'#showSubscription', 'aria-expanded':'{{device.has_subscription}}', 'aria-controls':'showSubscription'})}}
+			{% endif %}
+			  <label class="form-check-label" for="subscription_checkbox">
+			    Subscription Necessary 
+			  </label>
+			</div>
+		</div>
+		{% set class = "collapse" %}
+		{% if device.has_subscription %}
+			{% set class = "collapse show" %}
+		{% else %}
+			{% set class = "collapse" %}
+		{% endif %}
+		<div class="{{class}}" id="showSubscription">
+			<div class="input-group mb-3">
+			  <div class="input-group-prepend">
+			    <label class="input-group-text" for='recurring_price'>Subscription $</label>
+			  </div>
+			  {% if device.recurring_price %}
+			  	<input name="recurring_price" id='recurring_price' type="text" value="{{device.recurring_price}}" class="form-control" required>
+			  {% else %}
+			  	<input name="recurring_price" id='recurring_price' value=0 type="text" class="form-control" required>
+			  {% endif %}
+			  <div class="valid-feedback">
+			    	Looks good!
+			    </div> 
+			    <div class="invalid-feedback">
+			    	Please provide a reaccurring price. If none put 0.
+			    </div>
+			</div>
+			<div class="input-group mb-3">
+			  <div class="input-group-prepend">
+			    <label class="input-group-text" for="payment_occurence">Subscription Type</label>
+			  </div>
+			  {{ form.payment_occurence(class="custom-select", value="{{device.payment_occurence}}", id="payment_occurence") }}
+			</div>
+			<div class="form-group">
+			    <label for="subscription_description">Subscription Description</label>
+			    {% if device.subscription_description %}
+			    	<textarea class="form-control" name="subscription_description" id="subscription_description" rows="3">{{device.subscription_description}}</textarea>
+			    {% else %}
+			    	<textarea class="form-control" name="subscription_description" id="subscription_description" rows="3"></textarea>
+			    {% endif %}
+			    <div class="valid-feedback">
+			    	Looks good!
+			    </div> 
+			    <div class="invalid-feedback">
+			    	Please provide a subscription description.
+			    </div>
+			</div>
 		</div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="link">Hyperlink to Purchase Device</label>
 		  </div>
 		  {% if device.link %}
-		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' value="{{device.link}}" required>
+		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' value="{{device.link}}" placeholder='https://www.google.com' required>
 		  {% else %}
-		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' required>
+		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' placeholder='https://www.google.com' required>
 		  {% endif %}
 		  <div class="valid-feedback">
 		    	Looks good!
@@ -100,18 +145,7 @@
 		    Please provide a hyperlink to the device.
 		  </div>
 		</div>
-		<div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for="category">Device Control Category</label>
-		  </div>
-		  {{ form.category(class="custom-select", id="category", onload="categoryLoad()") }}
-		  <div class="valid-feedback">
-		    	Looks good!
-		  </div> 
-		  <div class="invalid-feedback">
-		    Please provide a device control input category.
-		  </div>
-		</div>
+		<h2>Rating</h2>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="rating">Device Rating</label>
@@ -131,9 +165,49 @@
 		    </div>
 		</div>
 		<div class="form-group">
+<<<<<<< HEAD
 			<label for="deviceImage">Device Image</label>
 			<input type="file" class="form-control-file" id="deviceImage" name='image'>
 		</div>
+=======
+		    <label for="narrative">Describe the rating for this device.</label>
+		    {% if device.narrative %}
+		    	<textarea class="form-control" name="narrative" id="narrative" rows="3">{{device.narrative}}</textarea>
+		    {% else %}
+		    	<textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
+		    {% endif %}
+		</div>
+		<h2>Warranty</h2>
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for='warranty_price'>Warranty Price $</label>
+		  </div>
+		  {% if device.warranty_price %}
+		  	<input name="warranty_price" id='warranty_price' type="text" class="form-control" value="{{device.warranty_price}}">
+		  {% else %}
+		  	<input name="warranty_price" value=0 id='warranty_price' type="text" class="form-control">
+		  {% endif %}
+		  <div class="valid-feedback">
+		    	Looks good!
+		  </div> 
+		</div>
+		<div class="form-group"> 
+			<div class="input-group mb-3">
+			  <div class="input-group-prepend">
+			  	<label class="input-group-text" for='warranty_length'>Warranty Length</label>
+			  </div>
+			  {% if device.warranty_length %}
+			  	<input type="text" id='warranty_length' name="warranty_length" class="form-control" value="{{device.warranty_length}}">
+			  {% else %}
+			  	<input type="text" id='warranty_length' name="warranty_length" class="form-control">
+			  {% endif %}
+			  <div class="valid-feedback">
+			  	Looks good! 
+			  </div>
+			</div>
+		</div> 
+		<h2>Categories</h2>
+>>>>>>> master
 		<p>Select all categories that apply</p> 
 		{% for homecategory in homecategories %}
 		<div class="form-check">
@@ -178,15 +252,7 @@
 	    //payment type 
 	    var select = document.getElementById('payment_occurence'); 
 	    for(var i=0; i<select.options.length; i++){
-	    	if(select.options[i].value=="{{device_po}}"){
-	    		select.selectedIndex = i; 
-	    	}
-	    }
-
-	    //device control category
-	    select = document.getElementById('category'); 
-	    for(var i=0; i<select.options.length; i++){
-	    	if(select.options[i].value=="{{device_cat}}"){
+	    	if(select.options[i].value=="{{device.po}}"){
 	    		select.selectedIndex = i; 
 	    	}
 	    }
@@ -199,9 +265,16 @@
 	    	}
 	    }
 	    //homecategories 
-	    var homeCatsArray = {{device_hc|safe}}; 
+	    var homeCatsArray = {{device.hc|safe}}; 
 	    for(var i=0; i<homeCatsArray.length; i++){
 	    	var checkbox = document.getElementById(homeCatsArray[i])
+	    	checkbox.checked = true 
+	    }
+
+	    //device categories
+	    var deviceCatsArray = {{device.dc|safe}}; 
+	    for(var i=0; i<deviceCatsArray.length; i++){
+	    	var checkbox = document.getElementById(deviceCatsArray[i])
 	    	checkbox.checked = true 
 	    }
 
