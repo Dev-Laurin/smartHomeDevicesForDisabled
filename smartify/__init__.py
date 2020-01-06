@@ -23,8 +23,7 @@ def create_app():
 
 	with app.app_context():
 
-		
-		#dev_db()
+		dev_db()
 # #---------------------------------------
 
 		from . import routes 

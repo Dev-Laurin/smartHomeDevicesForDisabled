@@ -238,6 +238,8 @@ def showDeviceOnCategory():
 				flash('Filtering by category failed. Contact site admin.', 'danger')
 				app.logger.info('Filtering by category failed.')
 				app.logger.info(e)
+	return render_template('list_devices_by_category.html', 
+			devices=devices, category=homeCat.name)
 
 @app.route('/getDevice/<id>')
 def getDevice(id=None):
@@ -316,7 +318,7 @@ def deleteCategory(id=None):
 def deleteDevice(id):
 	try: 
 		device = Device.query.get(id)
-		file_upload.delete_files(device, db=db, files=["image"])
+		file_upload.delete_files(device, files=["image"])
 		db.session.delete(device)
 		db.session.commit() 
 		flash('Device successfully deleted.', 'success')
