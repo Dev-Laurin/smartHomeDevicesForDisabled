@@ -1,8 +1,10 @@
 import os
 from flask import Flask 
-from flask_sqlalchemy import SQLAlchemy  
+from flask_sqlalchemy import SQLAlchemy 
+from flask_file_upload import FileUpload 
 
 db = SQLAlchemy()
+file_upload = FileUpload(db=db)
 
 def create_app():
 	#create and configure the app 
@@ -10,7 +12,8 @@ def create_app():
 		template_folder="templates", static_folder="static")
 	app.config.from_envvar('APP_CONFIG_FILE')
 
-	db.init_app(app)		
+	db.init_app(app)
+	file_upload.init_app(app)	
 
 	#ensure the instance folder exists 
 	try: 
@@ -20,8 +23,7 @@ def create_app():
 
 	with app.app_context():
 
-		
-		#dev_db()
+		dev_db()
 # #---------------------------------------
 
 		from . import routes 

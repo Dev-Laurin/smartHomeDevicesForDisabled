@@ -5,6 +5,7 @@ from flask import current_app as app
 from .models import (db, Device, devicecategory, paymentoccurence, 
 	homecategory, homecategories, devicecategories) 
 from .forms import CreateDeviceForm, AddCategoryForm, EditCategoryForm
+from . import file_upload
 
 #Routing 
 @app.route('/', methods=["GET", "POST"])
@@ -73,6 +74,11 @@ def editDevice(id):
 			#delete previous homecategories 
 			device.homecategories = []
 			device.devicecategories = []
+
+			image = request.files['image']
+			device = file_upload.update_files(device, files={
+				"image": image 
+			})
 	
 			try: 
 				#add homecategories to device
@@ -101,7 +107,7 @@ def editDevice(id):
 				flash('Device edited.', 'success')
 				return redirect(url_for('list'))
 			except Exception as e: 
-				flash('Error. Device was not edited.', 'danger')
+				flash('Error. Device was not edited. \n If uploading a file, it must have a filename of 16 characters or less.', 'danger')
 				app.logger.info('Error. Device was not edited.')
 				app.logger.info(e)
 				return retFunc
@@ -161,6 +167,10 @@ def createDevice():
 
 			device.po = po.name    
 			device.verb="Create"
+			image = request.files["image"]
+			device = file_upload.save_files(device, files={
+				"image": image
+			})
 
 			#add homecategories to device
 			for h in request.form.getlist('homeCat[]'): 
@@ -185,7 +195,7 @@ def createDevice():
 			app.logger.info('Device created.')
 			flash('Device created.', 'success')
 		except Exception as e: 
-			flash('Error. Device was not created.', 'danger')
+			flash('Error. Device was not created. \n If uploading a file, it must have a filename of 16 characters or less.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
 			return retFunc
@@ -202,6 +212,7 @@ def createDevice():
 
 @app.route('/showDevices', methods=["POST"])
 def showDeviceOnCategory():
+
 	try: 
 		#get devices with compatible home categories
 		homeCat = homecategory.query.filter_by(name=request.form.get('homecategory')).first()
@@ -220,18 +231,21 @@ def showDeviceOnCategory():
 				.join(Device.devicecategories)
 				.filter(devicecategory.id.in_(devCatIDs))
 				.all())
+		#Get image file urls 
+		for device in devices: 
+			device.image = file_upload.get_file_url(device, filename="image") 
 	except Exception as e: 
 				flash('Filtering by category failed. Contact site admin.', 'danger')
 				app.logger.info('Filtering by category failed.')
 				app.logger.info(e)
-
 	return render_template('list_devices_by_category.html', 
-		devices=devices, category=homeCat.name)
+			devices=devices, category=homeCat.name)
 
 @app.route('/getDevice/<id>')
 def getDevice(id=None):
 	try: 
 		device = Device.query.get(id)
+		device.image = file_upload.get_file_url(device, filename="image") 
 	except Exception as e: 
 		flash('Device was not found.', 'danger')
 		app.logger.info("Device was not found.")
@@ -362,14 +376,16 @@ def deleteCategory(id=None):
 def deleteDevice(id):
 	try: 
 		device = Device.query.get(id)
+		file_upload.delete_files(device, files=["image"])
 		db.session.delete(device)
 		db.session.commit() 
+		flash('Device successfully deleted.', 'success')
+		app.logger.info('Device deleted.')
 	except Exception as e: 
 		flash('Device could not be deleted.', 'danger')
 		app.logger.info('Device could not be deleted.')
 		app.logger.info(e)
-	flash('Device successfully deleted.', 'success')
-	app.logger.info('Device deleted.')
+	
 	return redirect(url_for('editDevices'))
 
 if __name__ == '__main__':
