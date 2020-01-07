@@ -45,6 +45,7 @@ class homecategory(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(90), nullable=False)
 	image = file_upload.Column(db)
+	image_alt = db.Column(db.String(80))
 
 @file_upload.Model
 class Device(db.Model):
@@ -71,5 +72,6 @@ class Device(db.Model):
 	rating = db.Column(db.Numeric(10,2), nullable=False)
 	narrative = db.Column(db.String(500))
 	image = file_upload.Column(db)
+	image_alt = db.Column(db.String(80))
 	warranty_price = db.Column(db.Float)
 	warranty_length = db.Column(db.String(80))
