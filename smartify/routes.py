@@ -4,7 +4,7 @@ from flask import (Flask, render_template, request,
 from flask import current_app as app 
 from .models import (db, Device, devicecategory, paymentoccurence, 
 	homecategory, homecategories, devicecategories) 
-from .forms import CreateDeviceForm, AddCategoryForm, EditCategoryForm
+from .forms import *
 from . import file_upload
 
 #Routing 
@@ -67,7 +67,8 @@ def editDevice(id):
 			device.rating = form.rating.data 
 			device.narrative = form.narrative.data 
 			device.warranty_price = form.warranty_price.data 
-			device.warranty_length = form.warranty_length.data 
+			device.warranty_length = form.warranty_length.data
+			device.image_alt = form.image_alt.data 
 
 			if form.is_subscription.data: 
 
@@ -155,11 +156,11 @@ def createDevice():
 				narrative=form.narrative.data, 
 				warranty_price=form.warranty_price.data, 
 				warranty_length=form.warranty_length.data,  
+				image_alt=form.image_alt.data, 
 				subscription_description=form.subscription_description.data, 
-				has_subscription=form.is_subscription.data
+				has_subscription=form.is_subscription.data, 
 				)
 			else: 
-
 				device = Device(name=form.name.data, 
 				description=form.description.data, 
 				price=form.price.data,
@@ -167,7 +168,8 @@ def createDevice():
 				rating=form.rating.data,
 				narrative=form.narrative.data, 
 				warranty_price=form.warranty_price.data, 
-				warranty_length=form.warranty_length.data
+				warranty_length=form.warranty_length.data, 
+				image_alt=form.image_alt.data,
 				)
 
 			device.po = po.name    
@@ -200,7 +202,7 @@ def createDevice():
 			app.logger.info('Device created.')
 			flash('Device created.', 'success')
 		except Exception as e: 
-			flash('Error. Device was not created. \n If uploading a file, it must have a filename of 16 characters or less.', 'danger')
+			flash('Error. Device was not created.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
 			return retFunc
@@ -275,31 +277,27 @@ def editHomeCategories():
 
 @app.route('/editHomeCategory/<id>', methods=["POST"])
 def editHomeCategory(id):
-	form = EditCategoryForm()
+	form = EditHomeCategoryForm()
 	if form.validate_on_submit():
 		try: 
 			cat = homecategory.query.get(id)
 			cat.name = form.name.data
+			cat.image_alt = form.image_alt.data 
 			image = request.files['image'] 
 			#if we are uploading optional image 
 			if image:
-				#if length is too long, tell user 
-				if len(image.filename) < 16: 
-					try:  #has this had an image before? 
-						if cat.image: 
-							cat = file_upload.update_files(cat, files={
-								"image": image 
-							})
-					except Exception as e:  
-						cat = file_upload.save_files(cat, files={
+				try:  #has this had an image before? 
+					if cat.image: 
+						cat = file_upload.update_files(cat, files={
 							"image": image 
 						})
-					db.session.add(cat)
-					db.session.commit()
-					flash('Category edited.', 'success')
-				else: 
-					flash('Filename is too long. 16 characters or less only.', 'danger')
-					app.logger.info('Filename is too long. 16 characters or less only.')
+				except Exception as e:  
+					cat = file_upload.save_files(cat, files={
+						"image": image 
+					})
+				db.session.add(cat)
+				db.session.commit()
+				flash('Category edited.', 'success')
 			else: 
 				db.session.add(cat)
 				db.session.commit()
@@ -315,10 +313,10 @@ def editHomeCategory(id):
 
 @app.route('/addHomeCategory', methods=["GET", "POST"])
 def addHomeCategory():
-	form = AddCategoryForm()
+	form = AddHomeCategoryForm()
 	if form.validate_on_submit(): 
 		try: 
-			hc = homecategory(name=form.name.data)
+			hc = homecategory(name=form.name.data, image_alt=form.image_alt.data)
 			image = request.files["image"]
 			if image: 
 				hc = file_upload.save_files(hc, files={
