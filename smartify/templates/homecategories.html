@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block main %}
+<div class="row">
+	<h1>Home Categories</h1> 
+</div>
+<div>
+	<div class="form-group"> 
+		<ul class="list-group" id="categoryList">
+		{% for c in categories %}
+		  <li class="list-group-item d-flex justify-content-between align-items-center" id="{{c}}">
+		    <img src="{{c.image}}" alt="Image of device" style="width: 30%;"/> {{c}}
+		    <span class="float-right">
+				<button type="button" class="btn btn-warning" onclick="makeEditable('{{c}}', '{{c.id}}', '{{c.image}}')">Edit</button>
+				<a href="/deleteHomeCategory/{{c.id}}" type="button" class="btn btn-danger">Delete</a>
+			</span>
+		  </li>
+		{% endfor %}
+		</ul>
+	</div> 
+	<h2> Add Category </h2>
+	<form class="needs-validation form" action="/addHomeCategory" method="post" enctype="multipart/form-data" novalidate> 
+		<label class="sr-only" for="newCat">New home category name</label>
+		<input type="text" name="name" id='newCat' class="form-control mr-1" required/><br>
+		<div class="form-group">
+			<label for="newImage">Category Image</label>
+			<input type="file" class="form-control-file" id="newImage" name='image'>
+		</div>
+		<button type="submit" class="btn btn-primary" onclick="addCategory()">Add</button>
+	</form>
+</div>
+
+<script>
+function makeEditable(name, id, file_url){
+	var elem = document.getElementById(name); 
+	elem.innerHTML = '<form action="/editHomeCategory/' + id + '" method="post" enctype="multipart/form-data">' +
+	 "<input type='text' name='name' value='" + elem.innerText.replace('Edit', '').replace('Delete', '').trim() + "'/>" + 
+	'<label class="sr-only" for="changeImage">Category Image</label>' + 
+	'<input type="file" class="form-control-file" id="changeImage" name="image"/><br>' + 
+	"<button type='submit' class='btn btn-success'>Save</button></form>" +
+	'<span class="float-right">' + 
+		'<button type="button" class="btn btn-warning" onclick="makeEditable(' + id + ')">Edit</button>' + 
+		'<a href="/deleteHomeCategory/' + id + '" type="button" class="btn btn-danger">Delete</a>' +
+		'</span>'; 
+}
+</script> 
+
+{% endblock %}

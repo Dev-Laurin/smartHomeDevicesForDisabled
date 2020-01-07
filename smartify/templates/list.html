@@ -34,18 +34,24 @@
 			{% endfor %}
 			<a href="#" id='submit' aria-label="Link for {{homecategories[index.foo].name}} Devices" onclick="beforeSubmit('{{homecategories[index.foo].name}}')" type="submit" class="custom-card">
 				<div class="card" style="width: 18rem;">
-				  <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
-				  <svg alt="Placeholder Image" class="bd-placeholder-img card-img-top" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image"><rect width="100%" height="100%" fill="#868e96"></rect></svg>
-				  <div class="card-img-overlay align-middle">
-				    <center><h5 class="align-middle text-AAA-green">{{homecategories[index.foo].name}}</h5></center>
+					{% if homecategories[index.foo].image %}
+				  		<img src="{{homecategories[index.foo].image}}" alt="Image of device" style="width: 100%;"/>
+				  	{% else %}
+				  		<svg alt="Placeholder Image" class="bd-placeholder-img card-img-top" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image"><rect width="100%" height="100%" fill="#868e96"></rect></svg>
+				  	{% endif %}
+				   <center> 
+					   <div class="card-body">
+	    				<h5 class="card-title text-AAA-green">{{homecategories[index.foo].name}}</h5>
+	    			   </div>
+    				</center>
 				  </div>
-				</div>
 			</a></form> 
 	    </div>
 	    {% set index.foo = index.foo + 1 %}
 	    {% endif %}
 	    {% endfor %}
 	</div>
+	<br> 
 	{% endfor %}
 </form>
 <script>

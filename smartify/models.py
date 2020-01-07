@@ -37,12 +37,14 @@ homecategories = db.Table('homecategories',
 	db.Column('device_id', db.Integer, 
 		db.ForeignKey('device.id'), primary_key=True))
 
+@file_upload.Model
 class homecategory(db.Model): 
 	def __str__(self):
 		return self.name 
 
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(90), nullable=False)
+	image = file_upload.Column(db)
 
 @file_upload.Model
 class Device(db.Model):
