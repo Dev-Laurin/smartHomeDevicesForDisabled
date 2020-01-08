@@ -37,6 +37,13 @@ homecategories = db.Table('homecategories',
 	db.Column('device_id', db.Integer, 
 		db.ForeignKey('device.id'), primary_key=True))
 
+deviceresources = db.Table('deviceresources', 
+	db.Column('resourceURL_id', db.Integer,
+		db.ForeignKey('resourceURL.id'), primary_key=True),
+	db.Column('device_id', db.Integer, 
+		db.ForeignKey('device.id'), primary_key=True))
+
+
 @file_upload.Model
 class homecategory(db.Model): 
 	def __str__(self):
@@ -46,6 +53,13 @@ class homecategory(db.Model):
 	name = db.Column(db.String(90), nullable=False)
 	image = file_upload.Column(db)
 	image_alt = db.Column(db.String(80))
+
+class resourceURL(db.Model):
+	def __str__(self):
+		return self.url 
+
+	id = db.Column(db.Integer, primary_key=True)
+	url = db.Column(db.String(500), nullable=False)
 
 @file_upload.Model
 class Device(db.Model):
@@ -75,3 +89,6 @@ class Device(db.Model):
 	image_alt = db.Column(db.String(80))
 	warranty_price = db.Column(db.Float)
 	warranty_length = db.Column(db.String(80))
+	deviceresources = db.relationship('resourceURL',
+		secondary=deviceresources, lazy='subquery',
+		backref=db.backref('devices', lazy=True))

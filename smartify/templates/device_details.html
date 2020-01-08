@@ -62,6 +62,18 @@
 			        {% endif %}
 	        	</div> 
         	</div> 
+        	{% if device.deviceresources %}
+        	<div class="row">
+        		<div class="col"> 
+	        		<label><b>Additional Resources</b></label><br>
+	        		<ul>
+	        		{% for resource in device.deviceresources %}
+	        			<li><a href="{{resource}}">{{resource}}</a></li>
+					{% endfor %}
+					</ul>
+				</div> 
+        	</div>
+        	{% endif %}
         </div> 
 	</div> 
 </div>

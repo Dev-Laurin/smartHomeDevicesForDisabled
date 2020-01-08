@@ -129,6 +129,34 @@
 			    </div>
 			</div>
 		</div>
+		<div class="form-group"> 
+			<div class="custom-file">
+				<label class="custom-file-label" for="deviceImage">Device Image</label>
+				<input type="file" class="custom-file-input" id="deviceImage" name='image' required>
+				<div class="valid-feedback">
+			    	Looks good!
+			    </div> 
+			    <div class="invalid-feedback">
+			    	Please upload an image. 
+			    </div>
+			</div>
+		</div> 
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for='image_alt'>Alternative Text for Image</label>
+		  </div>
+		  	{% if device.image_alt %}
+		  	<input name="image_alt" id='image_alt' type="text" class="form-control" value="{{device.image_alt}}" required />
+		  	{% else %}
+		  	<input name="image_alt" id='image_alt' type="text" class="form-control" required />
+		  	{% endif %}
+		  	<div class="valid-feedback">
+		    	Looks good!
+		    </div> 
+		    <div class="invalid-feedback">
+		    	Must provide alternate text. 
+		    </div>
+		</div>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="link">Hyperlink to Purchase Device</label>
@@ -162,34 +190,6 @@
 		    </div> 
 		    <div class="invalid-feedback">
 		    	Please provide a rating.
-		    </div>
-		</div>
-		<div class="form-group"> 
-			<div class="custom-file">
-				<label class="custom-file-label" for="deviceImage">Device Image</label>
-				<input type="file" class="custom-file-input" id="deviceImage" name='image' required>
-				<div class="valid-feedback">
-			    	Looks good!
-			    </div> 
-			    <div class="invalid-feedback">
-			    	Please upload an image. 
-			    </div>
-			</div>
-		</div> 
-		<div class="input-group mb-3">
-		  <div class="input-group-prepend">
-		    <label class="input-group-text" for='image_alt'>Alternative Text for Image</label>
-		  </div>
-		  	{% if device.image_alt %}
-		  	<input name="image_alt" id='image_alt' type="text" class="form-control" value="{{device.image_alt}}" required />
-		  	{% else %}
-		  	<input name="image_alt" id='image_alt' type="text" class="form-control" required />
-		  	{% endif %}
-		  	<div class="valid-feedback">
-		    	Looks good!
-		    </div> 
-		    <div class="invalid-feedback">
-		    	Must provide alternate text. 
 		    </div>
 		</div>
 		<div class="form-group">
@@ -243,13 +243,47 @@
 			Choose at least one category. 
 		</div>
 		<br> 
+		<h2>Additional Resources</h2>
+		{% for resource in device.deviceresources %}
+		<div id="{{resource.id}}_div" class="input-group mb-3">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for="resourceLink">Hyperlink</label>
+		  </div>
+		  	<input type="text" name="resources[]" class="form-control" aria-label="Resource Link" id='{{resource.id}}' value="{{resource}}" placeholder='https://www.google.com'/> 
+		  	<button type="button" onclick="document.getElementById('{{resource.id}}_div').remove()" class="btn btn-danger ml-sm-2">Delete</button>
+		</div>
+		{% endfor %}
+		<div id="newResources"></div> 
+		<div class="input-group mb-2 mr-sm-2">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for="newResourceLink">Hyperlink</label>
+		  </div>
+		  	<input type="text" name="newResourceLink" class="form-control" aria-label="Add Resource Link" id='newResourceLink'> 
+		  	<button type="button" onclick="addResource('newResourceLink')" class="btn btn-primary ml-sm-2">Add</button>
+		</div>
+		<br> 
 		<!-- {{ form.recaptcha }} -->
 		<br> 
-		<button type='submit' class="btn btn-primary">Submit</button> 
+		<button type='submit' class="btn btn-primary mb-2">Submit</button> 
 	</form> 
 	<br> 
 </div>
 <script>
+	function addResource(id){
+		var resourceDiv = document.getElementById(id); 
+		var text = resourceDiv.value;  
+		var div = document.getElementById('newResources'); 
+		div.innerHTML += '<div id="newRDiv" class="input-group mb-3">' +
+		  '<div class="input-group-prepend">' +
+		    '<label class="input-group-text" for="' + text + '">Hyperlink</label>' +
+		  '</div>' +
+		  	'<input type="text" name="resources[]" class="form-control" aria-label="Resource Link" id="'+ text + '" value="' + text + '" placeholder="https://www.google.com"/>' + 
+		  	'<button type="button" onclick="document.getElementById(\'newRDiv\').remove()" class="btn btn-danger ml-sm-2">Delete</button>' +
+		'</div>'; 
+		
+		resourceDiv.value = "";
+	}
+
 	(function() {
 	  'use strict';
 	  window.addEventListener('load', function() {
