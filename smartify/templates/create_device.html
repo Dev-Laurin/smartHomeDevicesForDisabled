@@ -245,11 +245,12 @@
 		<br> 
 		<h2>Additional Resources</h2>
 		{% for resource in device.deviceresources %}
-		<div class="input-group mb-3">
+		<div id="{{resource.id}}_div" class="input-group mb-3">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="resourceLink">Hyperlink</label>
 		  </div>
 		  	<input type="text" name="resources[]" class="form-control" aria-label="Resource Link" id='{{resource.id}}' value="{{resource}}" placeholder='https://www.google.com'/> 
+		  	<button type="button" onclick="document.getElementById('{{resource.id}}_div').remove()" class="btn btn-danger ml-sm-2">Delete</button>
 		</div>
 		{% endfor %}
 		<div id="newResources"></div> 
@@ -272,12 +273,14 @@
 		var resourceDiv = document.getElementById(id); 
 		var text = resourceDiv.value;  
 		var div = document.getElementById('newResources'); 
-		div.innerHTML += '<div class="input-group mb-3">' +
+		div.innerHTML += '<div id="newRDiv" class="input-group mb-3">' +
 		  '<div class="input-group-prepend">' +
 		    '<label class="input-group-text" for="' + text + '">Hyperlink</label>' +
 		  '</div>' +
 		  	'<input type="text" name="resources[]" class="form-control" aria-label="Resource Link" id="'+ text + '" value="' + text + '" placeholder="https://www.google.com"/>' + 
+		  	'<button type="button" onclick="document.getElementById(\'newRDiv\').remove()" class="btn btn-danger ml-sm-2">Delete</button>' +
 		'</div>'; 
+		
 		resourceDiv.value = "";
 	}
 
