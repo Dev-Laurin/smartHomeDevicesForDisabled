@@ -2,8 +2,7 @@
 from flask import (Flask, render_template, request, 
 	url_for, redirect, flash)
 from flask import current_app as app 
-from .models import (db, Device, devicecategory, paymentoccurence, 
-	homecategory, homecategories, devicecategories) 
+from .models import *
 from .forms import *
 from . import file_upload
 
@@ -77,9 +76,10 @@ def editDevice(id):
 				device.subscription_description = form.subscription_description.data
 				device.has_subscription = form.is_subscription.data 
 
-			#delete previous homecategories 
+			#delete previous 
 			device.homecategories = []
 			device.devicecategories = []
+			device.deviceresources = []
 
 			image = request.files['image']
 			device = file_upload.update_files(device, files={
@@ -91,7 +91,7 @@ def editDevice(id):
 				for h in request.form.getlist('homeCat[]'): 
 					hc = homecategory.query.filter_by(name=h).first()
 					#If it doesn't exist, create it 
-					if(not hc.id):
+					if(not hc):
 						hc = homecategory(name=h)
 						db.session.add(hc)
 						db.session.commit()
@@ -101,11 +101,21 @@ def editDevice(id):
 				for d in request.form.getlist('deviceCat[]'): 
 					dc = devicecategory.query.filter_by(name=d).first()
 					#If it doesn't exist, create it 
-					if(not dc.id):
+					if(not dc):
 						dc = devicecategory(name=d)
 						db.session.add(dc)
 						db.session.commit()
 					device.devicecategories.append(dc)
+
+				#add resources to device
+				for r in request.form.getlist('resources[]'): 
+					ru = resourceURL.query.filter_by(url=r).first()
+					#If it doesn't exist, create it 
+					if(not ru):
+						ru = resourceURL(url=r)
+						db.session.add(ru)
+						db.session.commit()
+					device.deviceresources.append(ru)
 
 				db.session.add(device)
 				db.session.commit()
@@ -183,7 +193,7 @@ def createDevice():
 			for h in request.form.getlist('homeCat[]'): 
 				hc = homecategory.query.filter_by(name=h).first()
 				#If it doesn't exist, create it 
-				if(not hc.id):
+				if(not hc):
 					hc = homecategory(name=h)
 					db.session.add(hc)
 					db.session.commit()
@@ -192,11 +202,20 @@ def createDevice():
 			for d in request.form.getlist('deviceCat[]'): 
 				dc = devicecategory.query.filter_by(name=d).first()
 				#If it doesn't exist, create it 
-				if(not dc.id):
+				if(not dc):
 					dc = devicecategory(name=d)
 					db.session.add(dc)
 					db.session.commit()
 				device.devicecategories.append(dc)
+			#add resources to device
+			for r in request.form.getlist('resources[]'): 
+				ru = resourceURL.query.filter_by(url=r).first()
+				#If it doesn't exist, create it 
+				if(not ru):
+					ru = resourceURL(url=r)
+					db.session.add(ru)
+					db.session.commit()
+				device.deviceresources.append(ru)
 			db.session.add(device)
 			db.session.commit()
 			app.logger.info('Device created.')
