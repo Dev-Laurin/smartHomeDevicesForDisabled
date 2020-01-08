@@ -19,23 +19,27 @@
 	</div> 
 	<h2> Add Category </h2>
 	<form class="needs-validation form" action="/addHomeCategory" method="post" enctype="multipart/form-data" novalidate> 
-		<label class="sr-only" for="newCat">New home category name</label>
-		<input type="text" name="name" id='newCat' class="form-control mr-1" required/><br>
-		<div class="form-group">
-			<label for="newImage">Category Image</label>
-			<input type="file" class="form-control-file" id="newImage" name='image'/><br> 
-			<div class="input-group mb-3">
-			  <div class="input-group-prepend">
-			    <label class="input-group-text" for='image_alt'>Alternative Text for Image</label>
-			  </div>
-			  	<input name="image_alt" id='image_alt' type="text" class="form-control" required />
-			  	<div class="valid-feedback">
-			    	Looks good!
-			    </div> 
-			    <div class="invalid-feedback">
-			    	Must provide alternate text. 
-			    </div>
-			</div>
+		<div class="form-group"> 
+			<label class="sr-only" for="newCat">New home category name</label>
+			<input type="text" name="name" id='newCat' class="form-control mr-1" required/>
+		</div> 
+		<div class="form-group"> 
+			<div class="custom-file">
+				<label class="custom-file-label" for="newImage">Category Image</label>
+				<input type="file" class="custom-file-input" id="newImage" name='image'/>
+			</div> 
+		</div> 
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for='image_alt'>Alternative Text for Image</label>
+		  </div>
+		  	<input name="image_alt" id='image_alt' type="text" class="form-control" required />
+		  	<div class="valid-feedback">
+		    	Looks good!
+		    </div> 
+		    <div class="invalid-feedback">
+		    	Must provide alternate text. 
+		    </div>
 		</div>
 		<button type="submit" class="btn btn-primary" onclick="addCategory()">Add</button>
 	</form>
@@ -46,8 +50,8 @@ function makeEditable(name, id, alt_text){
 	var elem = document.getElementById(name); 
 	elem.innerHTML = '<form action="/editHomeCategory/' + id + '" method="post" enctype="multipart/form-data">' +
 	 "<input type='text' name='name' value='" + elem.innerText.replace('Edit', '').replace('Delete', '').trim() + "'/><br>" + 
-	'<label class="sr-only" for="changeImage">Category Image</label>' + 
-	'<input type="file" class="form-control-file" id="changeImage" name="image"/><br>' + 
+	'<div class="custom-file"><label class="custom-file-label" for="changeImage">Category Image</label>' + 
+	'<input type="file" class="custom-file-input" id="changeImage" name="image"/></div>' + 
 	'<div class="input-group mb-3">' +
 	  '<div class="input-group-prepend">' +
 	    '<label class="input-group-text" for="image_alt">' +'Alternative Text for Image</label>' +
