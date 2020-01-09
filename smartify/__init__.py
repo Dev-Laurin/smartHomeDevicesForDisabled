@@ -2,9 +2,11 @@ import os
 from flask import Flask 
 from flask_sqlalchemy import SQLAlchemy 
 from flask_file_upload import FileUpload 
+from flask_login import LoginManager 
 
 db = SQLAlchemy()
 file_upload = FileUpload(db=db)
+login_manager = LoginManager()
 
 def create_app():
 	#create and configure the app 
@@ -14,6 +16,7 @@ def create_app():
 
 	db.init_app(app)
 	file_upload.init_app(app)	
+	login_manager.init_app(app)
 
 	#ensure the instance folder exists 
 	try: 
@@ -29,7 +32,6 @@ def create_app():
 		from . import routes 
 
 		return app 
-
 
 def dev_db():
 	from .models import (paymentoccurence, 

@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block main %}
+<form class="needs-validation" action="/signup" method="post" novalidate>
+  <h1> Sign up</h1>
+  <div class="form-group">
+    <label for="email">Email address</label>
+    <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+    <div class="valid-feedback">
+	  	Looks good! 
+	  </div>
+	  <div class="invalid-feedback">
+	  	Please provide a device name.  
+	  </div>
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" name="password" id="password" required>
+    <div class="valid-feedback">
+	  	Looks good! 
+	  </div>
+	  <div class="invalid-feedback">
+	  	Please provide a password between 6 and 25 characters. 
+	  </div>
+  </div>
+  <div class="form-group">
+    <label for="confirmPassword">Confirm Password</label>
+    <input type="password" class="form-control" name="confirm" id="confirmPassword">
+    <div class="valid-feedback">
+	  	Looks good! 
+	  </div>
+	  <div class="invalid-feedback">
+	  	Passwords don't match. 
+	  </div>
+  </div>
+  <button type="submit" name="register" class="btn btn-primary">Submit</button>
+</form>
+<script>
+	(function() {
+	  'use strict';
+	  window.addEventListener('load', function() {
+
+	    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+	    var forms = document.getElementsByClassName('needs-validation');
+	    // Loop over them and prevent submission
+	    var validation = Array.prototype.filter.call(forms, function(form) {
+	      form.addEventListener('submit', function(event) {
+	      	p = document.getElementById('password'); 
+	      	cp = document.getElementById('confirmPassword'); 
+	      	console.log(p)
+
+	      	console.log(cp)
+	        if (form.checkValidity() === false || p.value != cp.value) {
+	          event.preventDefault();
+	          event.stopPropagation();
+	        }
+	        form.classList.add('was-validated');
+	      }, false);
+	    });
+	  }); 
+	}); 
+</script>
+{% endblock %}
