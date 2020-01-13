@@ -1,14 +1,20 @@
 from . import db, file_upload
-from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_user import UserMixin
 
 ##Database Schema
 
 class User(UserMixin, db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	email = db.Column(db.String(120), unique=True, nullable=False)
+	active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
+
+	username = db.Column(db.String(120), unique=True, nullable=False)
 	password = db.Column(db.String(200), primary_key=False,
 		unique=False, nullable=False)
+
+	# User information
+	first_name = db.Column(db.String(100), nullable=False, server_default='')
+	last_name = db.Column(db.String(100), nullable=False, server_default='')
 
 	def __repr__(self):
 		return '<User {}>'.format(self.name)
@@ -19,6 +25,19 @@ class User(UserMixin, db.Model):
 
 	def check_password(self, password):
 		return check_password_hash(self.password, password)
+
+	roles = db.relationship('Role', secondary='user_roles')
+
+class Role(db.Model):
+	__tablename__ = 'role'
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String(50), unique=True)
+
+class UserRoles(db.Model):
+	__tablename__ = 'user_roles'
+	id = db.Column(db.Integer, primary_key=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+	role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete='CASCADE'))
 
 class devicecategory(db.Model):
 	def __str__(self):

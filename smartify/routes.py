@@ -4,9 +4,9 @@ from flask import (Flask, render_template, request,
 from flask import current_app as app 
 from .models import *
 from .forms import *
-from . import file_upload, login_manager
+from . import file_upload
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_required, logout_user, current_user, login_user
+from flask_user import current_user, login_required, roles_required
 
 #Routing 
 @app.route('/', methods=["GET", "POST"])
@@ -35,7 +35,7 @@ def list():
 		categories=categories, homecategories=hc)
 
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
-@login_required
+@roles_required('Editor')
 def editDevice(id):
 	form = CreateDeviceForm()
 	dc = devicecategory.query.all()
@@ -141,7 +141,7 @@ def editDevice(id):
 
 @app.route('/createDevice', methods=["GET", "POST"])
 @app.route('/createDevice/', methods=["GET", "POST"])
-@login_required
+@roles_required('Editor')
 def createDevice():
 	form = CreateDeviceForm(is_subscription=False)
 
@@ -285,13 +285,13 @@ def getDevice(id=None):
 	return render_template('device_details.html', device=device)
 
 @app.route('/editDevices')
-@login_required
+@roles_required('Editor')
 def editDevices():
 	devices = Device.query.all()
 	return render_template('edit_devices.html', devices=devices)
 
 @app.route('/editHomeCategories')
-@login_required
+@roles_required('Editor')
 def editHomeCategories():
 	hc = homecategory.query.all()
 	cats = []
@@ -301,7 +301,7 @@ def editHomeCategories():
 	return render_template('homecategories.html', categories=cats)
 
 @app.route('/editHomeCategory/<id>', methods=["POST"])
-@login_required
+@roles_required('Editor')
 def editHomeCategory(id):
 	form = EditHomeCategoryForm()
 	if form.validate_on_submit():
@@ -338,7 +338,7 @@ def editHomeCategory(id):
 	return redirect(url_for('editHomeCategories'))
 
 @app.route('/addHomeCategory', methods=["GET", "POST"])
-@login_required
+@roles_required('Editor')
 def addHomeCategory():
 	form = AddHomeCategoryForm()
 	if form.validate_on_submit(): 
@@ -363,7 +363,7 @@ def addHomeCategory():
 	return redirect(url_for('editHomeCategories'))
 
 @app.route('/deleteHomeCategory/<id>')
-@login_required
+@roles_required('Editor')
 def deleteHomeCategory(id=None):
 	try: 
 		hc = homecategory.query.get(id)
@@ -385,13 +385,13 @@ def deleteHomeCategory(id=None):
 	return redirect(url_for('editHomeCategories'))
 
 @app.route('/editCategories')
-@login_required
+@roles_required('Editor')
 def editCategories():
 	deviceCat = devicecategory.query.all()
 	return render_template('categories.html', deviceCat=deviceCat)
 
 @app.route('/editCategory/<id>', methods=["POST"])
-@login_required
+@roles_required('Editor')
 def editCategory(id):
 	form = EditCategoryForm()
 	if form.validate_on_submit():
@@ -411,7 +411,7 @@ def editCategory(id):
 	return redirect(url_for('editCategories'))
 
 @app.route('/addCategory', methods=["GET", "POST"])
-@login_required
+@roles_required('Editor')
 def addCategory():
 	form = AddCategoryForm()
 	if form.validate_on_submit(): 
@@ -428,7 +428,7 @@ def addCategory():
 	return redirect(url_for('editCategories'))
 
 @app.route('/deleteCategory/<id>')
-@login_required
+@roles_required('Editor')
 def deleteCategory(id=None):
 	try: 
 		dc = devicecategory.query.get(id)
@@ -444,7 +444,7 @@ def deleteCategory(id=None):
 	return redirect(url_for('editCategories'))
 
 @app.route('/deleteDevice/<id>')
-@login_required
+@roles_required('Editor')
 def deleteDevice(id):
 	try: 
 		device = Device.query.get(id)
@@ -459,84 +459,6 @@ def deleteDevice(id):
 		app.logger.info(e)
 	
 	return redirect(url_for('editDevices'))
-
-##User Auth###
-@login_manager.user_loader
-def load_user(user_id):
-	from .models import User 
-	return User.query.get(user_id)
-
-@app.route('/logout')
-@login_required
-def logout():
-	logout_user()
-	return redirect(url_for('list'))
-
-@login_manager.unauthorized_handler
-def unauthorized():
-	flash('You must be logged in to view that page.', 'danger')
-	return redirect(url_for('list'))
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-	if current_user.is_authenticated:
-		return redirect(url_for('list'))
-
-	form = LoginForm()
-	if form.validate_on_submit(): 
-		#sign user in 
-		email = form.email.data
-		password = form.password.data 
-		user = User.query.filter_by(email=email).first()
-		if user: 
-			if user.check_password(password=password):
-				login_user(user)
-				next = request.args.get('next')
-				if not is_safe_url(next):
-					return flask.abort(400)
-				flash('Welcome ' + user.email, 'success')
-				return redirect(next or url_for('list'))
-			else: 
-				flash('Password incorrect.', 'danger')
-				app.logger.info('Failed logon attempt.')
-		else: 
-			flash('No user with that email exists.', 'danger')
-			app.logger.info('No user with this email.')
-	elif form.errors: 
-		flash(form.errors, 'danger')
-		app.logger.info(form.errors)
-
-	return redirect(url_for('list'))
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-	form = SignupForm()
-	if form.validate_on_submit(): 
-		#sign user in 
-		try: 
-			email = form.email.data 
-			existing_user = User.query.filter_by(email=email).first()
-			if existing_user is None:
-				user = User(email=email, 
-					password=generate_password_hash(form.
-						password.data, method='sha256'))
-				db.session.add(user)
-				db.session.commit()
-				login_user(user)
-				flash('Welcome ' + email, 'success')
-				app.logger.info('Created user: ' + email)
-				return redirect(url_for('list'))
-			flash('A user already exists with that email address.', 'danger')
-			app.logger.info("User already exists.")
-			return render_template('signup.html')
-		except Exception as e: 
-			flash('User creation error.', 'danger')
-			app.logger.info('User creation error.')
-			app.logger.info(e)
-	if form.errors: 
-		flash(form.errors, 'danger')
-		app.logger.info(form.errors)
-	return render_template('signup.html')
 
 if __name__ == '__main__':
 	app.run()
