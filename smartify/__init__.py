@@ -24,13 +24,9 @@ def create_app():
 	except OSError: 
 		pass 
 
-	@app.context_processor 
-	def context_processor():
-		return dict(user_manager=user_manager)
-
 	with app.app_context():
 
-		dev_db()
+		dev_db(user_manager=user_manager)
 		
 # #---------------------------------------
 
@@ -38,7 +34,7 @@ def create_app():
 
 		return app 
 
-def dev_db():
+def dev_db(user_manager):
 	from .models import (paymentoccurence, 
 			devicecategory, devicecategories, 
 			homecategory, Device, homecategories,
@@ -46,6 +42,26 @@ def dev_db():
 	#initialize database -- for dev only 
 	db.drop_all()
 	db.create_all()
+
+	#Roles 
+	admin = Role(name='Admin')
+	editor = Role(name='Editor')
+	#users
+	user = User(username="laurin", 
+		password=user_manager.hash_password("Hellothere3"),
+		first_name="Laurin", last_name="Fisher")
+	user.roles.append(admin)
+	db.session.add(user)
+	db.session.commit()
+
+	user = User(username="editor", 
+		password=user_manager.hash_password("helloWorld3"),
+		first_name="Sara", last_name="Rio")
+	user.roles.append(editor)
+	db.session.add(user)
+	db.session.commit()
+
+	#devices 
 	po = paymentoccurence(name="Once")
 	db.session.add(po)
 	db.session.commit()

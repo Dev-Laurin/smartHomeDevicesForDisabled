@@ -5,6 +5,9 @@ from flask_user import UserMixin
 ##Database Schema
 
 class User(UserMixin, db.Model):
+	def __str__(self):
+		return self.username 
+
 	id = db.Column(db.Integer, primary_key=True)
 	active = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
 
@@ -16,9 +19,6 @@ class User(UserMixin, db.Model):
 	first_name = db.Column(db.String(100), nullable=False, server_default='')
 	last_name = db.Column(db.String(100), nullable=False, server_default='')
 
-	def __repr__(self):
-		return '<User {}>'.format(self.name)
-
 	def set_password(self, password):
 		self.password = generate_password_hash(password, 
 			method='sha256')
@@ -29,6 +29,9 @@ class User(UserMixin, db.Model):
 	roles = db.relationship('Role', secondary='user_roles')
 
 class Role(db.Model):
+	def __str__(self):
+		return self.name 
+		
 	__tablename__ = 'role'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50), unique=True)

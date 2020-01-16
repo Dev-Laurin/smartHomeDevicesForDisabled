@@ -7,6 +7,7 @@ from .forms import *
 from . import file_upload
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_user import current_user, login_required, roles_required
+import json 
 
 #Routing 
 @app.route('/', methods=["GET", "POST"])
@@ -35,7 +36,7 @@ def list():
 		categories=categories, homecategories=hc)
 
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def editDevice(id):
 	form = CreateDeviceForm()
 	dc = devicecategory.query.all()
@@ -141,7 +142,7 @@ def editDevice(id):
 
 @app.route('/createDevice', methods=["GET", "POST"])
 @app.route('/createDevice/', methods=["GET", "POST"])
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def createDevice():
 	form = CreateDeviceForm(is_subscription=False)
 
@@ -285,13 +286,13 @@ def getDevice(id=None):
 	return render_template('device_details.html', device=device)
 
 @app.route('/editDevices')
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def editDevices():
 	devices = Device.query.all()
 	return render_template('edit_devices.html', devices=devices)
 
 @app.route('/editHomeCategories')
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def editHomeCategories():
 	hc = homecategory.query.all()
 	cats = []
@@ -301,7 +302,7 @@ def editHomeCategories():
 	return render_template('homecategories.html', categories=cats)
 
 @app.route('/editHomeCategory/<id>', methods=["POST"])
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def editHomeCategory(id):
 	form = EditHomeCategoryForm()
 	if form.validate_on_submit():
@@ -338,7 +339,7 @@ def editHomeCategory(id):
 	return redirect(url_for('editHomeCategories'))
 
 @app.route('/addHomeCategory', methods=["GET", "POST"])
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def addHomeCategory():
 	form = AddHomeCategoryForm()
 	if form.validate_on_submit(): 
@@ -363,7 +364,7 @@ def addHomeCategory():
 	return redirect(url_for('editHomeCategories'))
 
 @app.route('/deleteHomeCategory/<id>')
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def deleteHomeCategory(id=None):
 	try: 
 		hc = homecategory.query.get(id)
@@ -385,13 +386,13 @@ def deleteHomeCategory(id=None):
 	return redirect(url_for('editHomeCategories'))
 
 @app.route('/editCategories')
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def editCategories():
 	deviceCat = devicecategory.query.all()
 	return render_template('categories.html', deviceCat=deviceCat)
 
 @app.route('/editCategory/<id>', methods=["POST"])
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def editCategory(id):
 	form = EditCategoryForm()
 	if form.validate_on_submit():
@@ -411,7 +412,7 @@ def editCategory(id):
 	return redirect(url_for('editCategories'))
 
 @app.route('/addCategory', methods=["GET", "POST"])
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def addCategory():
 	form = AddCategoryForm()
 	if form.validate_on_submit(): 
@@ -428,7 +429,7 @@ def addCategory():
 	return redirect(url_for('editCategories'))
 
 @app.route('/deleteCategory/<id>')
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def deleteCategory(id=None):
 	try: 
 		dc = devicecategory.query.get(id)
@@ -444,7 +445,7 @@ def deleteCategory(id=None):
 	return redirect(url_for('editCategories'))
 
 @app.route('/deleteDevice/<id>')
-@roles_required('Editor')
+@roles_required(['Admin', 'Editor'])
 def deleteDevice(id):
 	try: 
 		device = Device.query.get(id)
@@ -459,6 +460,44 @@ def deleteDevice(id):
 		app.logger.info(e)
 	
 	return redirect(url_for('editDevices'))
+
+@app.route('/editUserAccounts')
+@roles_required('Admin')
+def editUsers():
+	users = User.query.all()
+
+	#JSON obj for javascript
+	Users = {}
+	for u in users: 
+		user_roles = []
+		for r in u.roles: 
+			user_roles.append(r.name) 
+		Users[u.username] = {'id': u.id, 'username': u.username, 
+		'roles': user_roles}
+
+	roles = Role.query.all()
+	Roles = []
+	for r in roles:
+		Roles.append(r.name) 
+
+	return render_template('edit_users.html', 
+		user_json=Users, users=users, roles=Roles)
+
+@app.route('/editUser/<id>', methods=["POST"])
+def editUser(id): 
+	try: 
+		user = User.query.get(id)
+		user.roles = request.form.getlist('roles[]')
+		db.session.add(user)
+		db.session.commit()
+		flash('User updated.', 'success')
+		app.logger.info('User updated.')
+		print(user.roles)
+	except Exception as e: 
+		flash('Could not update user.', 'danger')
+		app.logger.info("Could not update user roles.")
+		app.logger.info(e)
+	return redirect(url_for('editUsers'))
 
 if __name__ == '__main__':
 	app.run()
