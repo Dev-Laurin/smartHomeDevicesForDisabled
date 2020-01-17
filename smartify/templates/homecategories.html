@@ -25,7 +25,7 @@
 		</div> 
 		<div class="form-group"> 
 			<div class="custom-file">
-				<label class="custom-file-label" for="newImage">Category Image</label>
+				<label class="custom-file-label" id="newImageLabel" for="newImage">Category Image</label>
 				<input type="file" class="custom-file-input" id="newImage" name='image'/>
 			</div> 
 		</div> 
@@ -50,7 +50,7 @@ function makeEditable(name, id, alt_text){
 	var elem = document.getElementById(name); 
 	elem.innerHTML = '<form action="/editHomeCategory/' + id + '" method="post" enctype="multipart/form-data">' +
 	 "<input type='text' name='name' value='" + elem.innerText.replace('Edit', '').replace('Delete', '').trim() + "'/><br>" + 
-	'<div class="custom-file"><label class="custom-file-label" for="changeImage">Category Image</label>' + 
+	'<div class="custom-file"><label class="custom-file-label" for="changeImage" id="changeImageLabel">Category Image</label>' + 
 	'<input type="file" class="custom-file-input" id="changeImage" name="image"/></div>' + 
 	'<div class="input-group mb-3">' +
 	  '<div class="input-group-prepend">' +
@@ -63,7 +63,18 @@ function makeEditable(name, id, alt_text){
 		'<button type="button" class="btn btn-warning" onclick="makeEditable(' + id + ')">Edit</button>' + 
 		'<a href="/deleteHomeCategory/' + id + '" type="button" class="btn btn-danger">Delete</a>' +
 		'</span>'; 
+	setEvent(); 
 }
+
+function setEvent(){
+	document.querySelector('.custom-file-input').addEventListener('change', function(e){
+			var filename = this.files[0].name; // document.getElementById('newImage').files[0].name;
+			console.log(filename) 
+			document.getElementById(this.id + "Label").innerText = filename 
+		})	
+}
+setEvent()
+
 </script> 
 
 {% endblock %}

@@ -28,7 +28,7 @@ class CreateDeviceForm(FlaskForm):
 		message="Warranty length needs to be between 1 and 80 characters.")])
 	subscription_description = TextAreaField('subscription_description', validators=[Length(0, 
 		500, message="Subscription description has too many characters, max=500.")])
-	image_alt = StringField('image_alt', validators=[InputRequired(), Length(1, 80, 
+	image_alt = StringField('image_alt', validators=[Length(0, 80, 
 		message="Alt text needs to be between 1 and 80 characters.")])
 	#recaptcha = RecaptchaField()
 
