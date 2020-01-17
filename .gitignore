@@ -1,8 +1,9 @@
 npm_modules/
 node_modules/
 instance/
-static/uploads/
-static/src/
+device/
+homecategory/
+src/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
