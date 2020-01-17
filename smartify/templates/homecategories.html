@@ -19,6 +19,7 @@
 	</div> 
 	<h2> Add Category </h2>
 	<form class="needs-validation form" action="/addHomeCategory" method="post" enctype="multipart/form-data" novalidate> 
+		{{ form.csrf_token }}
 		<div class="form-group"> 
 			<label class="sr-only" for="newCat">New home category name</label>
 			<input type="text" name="name" id='newCat' class="form-control mr-1" required/>
@@ -48,7 +49,7 @@
 <script>
 function makeEditable(name, id, alt_text){
 	var elem = document.getElementById(name); 
-	elem.innerHTML = '<form action="/editHomeCategory/' + id + '" method="post" enctype="multipart/form-data">' +
+	elem.innerHTML = '<form action="/editHomeCategory/' + id + '" method="post" enctype="multipart/form-data">{{ form.csrf_token }}' +
 	 "<input type='text' name='name' value='" + elem.innerText.replace('Edit', '').replace('Delete', '').trim() + "'/><br>" + 
 	'<div class="custom-file"><label class="custom-file-label" for="changeImage" id="changeImageLabel">Category Image</label>' + 
 	'<input type="file" class="custom-file-input" id="changeImage" name="image"/></div>' + 

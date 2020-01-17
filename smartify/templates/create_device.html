@@ -9,7 +9,7 @@
 
 <div>
 	<form class="needs-validation" enctype="multipart/form-data" action="/createDevice/{{device.id}}" method="post" novalidate> 
-		<!-- {{ form.csrf_token }} -->
+		{{ form.csrf_token }} 
 		<div class="form-group"> 
 			<div class="input-group mb-3">
 			  <div class="input-group-prepend">
