@@ -336,12 +336,14 @@ def editDevices():
 @app.route('/editHomeCategories')
 @roles_required(['Admin', 'Editor'])
 def editHomeCategories():
+	form = EditHomeCategoryForm()
 	hc = homecategory.query.all()
 	cats = []
 	for h in hc: 
 		h.image = file_upload.get_file_url(h, filename="image")
 		cats.append(h)
-	return render_template('homecategories.html', categories=cats)
+	return render_template('homecategories.html', 
+		categories=cats, form=form)
 
 @app.route('/editHomeCategory/<id>', methods=["POST"])
 @roles_required(['Admin', 'Editor'])
