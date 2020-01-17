@@ -147,8 +147,8 @@ def editDevice(id):
 				return redirect(url_for('list'))
 			except Exception as e: 
 				flash('Error. Device was not edited.', 'danger')
-				app.logger.info('Error. Device was not edited.')
-				app.logger.info(e)
+				app.logger.error('Error. Device was not edited.')
+				app.logger.error(e)
 				return render_template('create_device.html',
 		homecategories=hc, devicecategories=dc, form=form, 
 		device=device, message='Error. Device was not edited.')
@@ -157,8 +157,8 @@ def editDevice(id):
 	elif form.errors:
 		#Form validation failed 
 		flash('Device not edited, validation failed.', 'danger')
-		app.logger.info('Device not edited, validation failed.')
-		app.logger.info(form.errors)
+		app.logger.error('Device not edited, validation failed.')
+		app.logger.error(form.errors)
 		return render_template('create_device.html',
 		homecategories=hc, devicecategories=dc, form=form, 
 		device=device, message='Error. Device was not edited.')
