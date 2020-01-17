@@ -86,9 +86,28 @@ def editDevice(id):
 			device.deviceresources = []
 
 			image = request.files['image']
-			device = file_upload.update_files(device, files={
-				"image": image 
-			})
+
+			#if we are uploading optional image 
+			if image:
+				#Test that alt text is given first 
+				if not form.image_alt.data: 
+					flash('Image Alternate Text is required.', 'danger')
+					app.logger.info('Image Alternate Text is required.')
+					return render_template('create_device.html',
+		homecategories=hc, devicecategories=dc, form=form, 
+		device=device, message="Image Alternate Text is required.")
+
+				try:  #has this had an image before? 
+					if device.image: 
+						device = file_upload.update_files(device, files={
+							"image": image 
+						})
+						app.logger.info('Had image before, update it.')
+				except Exception as e:  
+					device = file_upload.save_files(device, files={
+						"image": image 
+					})
+					app.logger.info('Saving new image.')
 	
 			try: 
 				#add homecategories to device
@@ -127,21 +146,28 @@ def editDevice(id):
 				flash('Device edited.', 'success')
 				return redirect(url_for('list'))
 			except Exception as e: 
-				flash('Error. Device was not edited. \n If uploading a file, it must have a filename of 16 characters or less.', 'danger')
+				flash('Error. Device was not edited.', 'danger')
 				app.logger.info('Error. Device was not edited.')
 				app.logger.info(e)
-				return retFunc
+				return render_template('create_device.html',
+		homecategories=hc, devicecategories=dc, form=form, 
+		device=device, message='Error. Device was not edited.')
+
 
 	elif form.errors:
 		#Form validation failed 
 		flash('Device not edited, validation failed.', 'danger')
 		app.logger.info('Device not edited, validation failed.')
 		app.logger.info(form.errors)
-		return retFunc
+		return render_template('create_device.html',
+		homecategories=hc, devicecategories=dc, form=form, 
+		device=device, message='Error. Device was not edited.')
+
 	return retFunc
 
 @app.route('/createDevice', methods=["GET", "POST"])
 @app.route('/createDevice/', methods=["GET", "POST"])
+@app.route('/createDevice/None', methods=["GET", "POST"])
 @roles_required(['Admin', 'Editor'])
 def createDevice():
 	form = CreateDeviceForm(is_subscription=False)
@@ -158,6 +184,7 @@ def createDevice():
 		po = paymentoccurence.query.filter_by(name=form.payment_occurence.data).first()
 				
 		try:
+
 			#There is a subscription 
 			if form.is_subscription.data:
 
@@ -190,9 +217,19 @@ def createDevice():
 			device.po = po.name    
 			device.verb="Create"
 			image = request.files["image"]
-			device = file_upload.save_files(device, files={
-				"image": image
-			})
+			if image: 
+				#Test that alt text is given first 
+				if not form.image_alt.data: 
+					flash('Image Alternate Text is required.', 'danger')
+					app.logger.info('Image Alternate Text is required.')
+					return render_template("create_device.html",
+		homecategories=hc, devicecategories=dc, form=form, 
+		device=device, message='Image Alternate Text is required.')
+	
+
+				device = file_upload.save_files(device, files={
+					"image": image
+				})
 
 			#add homecategories to device
 			for h in request.form.getlist('homeCat[]'): 
@@ -229,7 +266,9 @@ def createDevice():
 			flash('Error. Device was not created.', 'danger')
 			app.logger.info('Error. Device was not created.')
 			app.logger.info(e)
-			return retFunc
+			return render_template("create_device.html",
+		homecategories=hc, devicecategories=dc, form=form, 
+		device=device, message='Device not created, validation failed.')
 
 		return redirect(url_for('list'))
 	elif form.errors:
@@ -237,7 +276,10 @@ def createDevice():
 		flash('Device not created, validation failed.', 'danger')
 		app.logger.info('Device not created, validation failed.')
 		app.logger.info(form.errors)
-		return retFunc
+		return render_template("create_device.html",
+		homecategories=hc, devicecategories=dc, form=form, 
+		 message='Device not created, validation failed.')
+	
 
 	return retFunc
 
