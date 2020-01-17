@@ -373,11 +373,11 @@ def editHomeCategory(id):
 				flash('Category edited.', 'success')
 		except Exception as e: 
 			flash('Editing category failed.', 'danger')
-			app.logger.info('Editing category failed (db).')
+			app.logger.error('Editing category failed (db).')
 			app.logger.info(e)
 	else: 
 		flash("Category could not be edited. Contact developer.", 'danger')
-		app.logger.info(form.errors)
+		app.logger.error(form.errors)
 	return redirect(url_for('editHomeCategories'))
 
 @app.route('/addHomeCategory', methods=["GET", "POST"])
@@ -398,11 +398,11 @@ def addHomeCategory():
 			app.logger.info("Category created.")
 		except Exception as e: 
 			flash("Category could not be created.", 'danger')
-			app.logger.info('Category could not be created in db.')
-			app.logger.info(e)
+			app.logger.error('Category could not be created in db.')
+			app.logger.error(e)
 	elif(form.errors):
 		flash('Error adding home category.', 'danger')
-		app.logger.info(form.errors)
+		app.logger.error(form.errors)
 	return redirect(url_for('editHomeCategories'))
 
 @app.route('/deleteHomeCategory/<id>')
@@ -422,8 +422,8 @@ def deleteHomeCategory(id=None):
 		flash('Category successfully deleted.', 'success')
 	except Exception as e: 
 		flash('Category could not be deleted. There are still devices that use this category.', 'danger')
-		app.logger.info('Device category could not be deleted.')
-		app.logger.info(e)
+		app.logger.error('Device category could not be deleted.')
+		app.logger.error(e)
 	
 	return redirect(url_for('editHomeCategories'))
 
@@ -446,11 +446,11 @@ def editCategory(id):
 			flash('Category edited.', 'success')
 		except Exception as e: 
 			flash('Editing category failed.', 'danger')
-			app.logger.info('Editing category failed (db).')
-			app.logger.info(e)
+			app.logger.error('Editing category failed (db).')
+			app.logger.error(e)
 	else: 
 		flash(form.errors, 'danger')
-		app.logger.info(form.errors)
+		app.logger.error(form.errors)
 	return redirect(url_for('editCategories'))
 
 @app.route('/addCategory', methods=["GET", "POST"])
@@ -466,8 +466,8 @@ def addCategory():
 			app.logger.info("Category created.")
 		except Exception as e: 
 			flash("Category could not be created.", 'danger')
-			app.logger.info('Category could not be created in db.')
-			app.logger.info(e)
+			app.logger.error('Category could not be created in db.')
+			app.logger.error(e)
 	return redirect(url_for('editCategories'))
 
 @app.route('/deleteCategory/<id>')
@@ -481,8 +481,8 @@ def deleteCategory(id=None):
 		flash('Category successfully deleted.', 'success')
 	except Exception as e: 
 		flash('Category could not be deleted. There are still devices that use this category.', 'danger')
-		app.logger.info('Device category could not be deleted.')
-		app.logger.info(e)
+		app.logger.error('Device category could not be deleted.')
+		app.logger.error(e)
 	
 	return redirect(url_for('editCategories'))
 
@@ -498,8 +498,8 @@ def deleteDevice(id):
 		app.logger.info('Device deleted.')
 	except Exception as e: 
 		flash('Device could not be deleted.', 'danger')
-		app.logger.info('Device could not be deleted.')
-		app.logger.info(e)
+		app.logger.error('Device could not be deleted.')
+		app.logger.error(e)
 	
 	return redirect(url_for('editDevices'))
 
@@ -534,11 +534,10 @@ def editUser(id):
 		db.session.commit()
 		flash('User updated.', 'success')
 		app.logger.info('User updated.')
-		print(user.roles)
 	except Exception as e: 
 		flash('Could not update user.', 'danger')
-		app.logger.info("Could not update user roles.")
-		app.logger.info(e)
+		app.logger.error("Could not update user roles.")
+		app.logger.error(e)
 	return redirect(url_for('editUsers'))
 
 if __name__ == '__main__':
