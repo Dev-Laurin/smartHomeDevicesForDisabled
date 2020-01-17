@@ -2,11 +2,10 @@ import os
 from flask import Flask 
 from flask_sqlalchemy import SQLAlchemy 
 from flask_file_upload import FileUpload 
-from flask_login import LoginManager 
+from flask_user import UserManager, roles_required, current_user
 
 db = SQLAlchemy()
 file_upload = FileUpload(db=db)
-login_manager = LoginManager()
 
 def create_app():
 	#create and configure the app 
@@ -16,7 +15,8 @@ def create_app():
 
 	db.init_app(app)
 	file_upload.init_app(app)	
-	login_manager.init_app(app)
+	from .models import User 
+	user_manager = UserManager(app, db, User)
 
 	#ensure the instance folder exists 
 	try: 
@@ -26,19 +26,42 @@ def create_app():
 
 	with app.app_context():
 
-		dev_db()
+		dev_db(user_manager=user_manager)
+		
 # #---------------------------------------
 
 		from . import routes 
 
 		return app 
 
-def dev_db():
+def dev_db(user_manager):
 	from .models import (paymentoccurence, 
-			devicecategory, devicecategories, homecategory, Device, homecategories)
+			devicecategory, devicecategories, 
+			homecategory, Device, homecategories,
+			User, Role, UserRoles)
 	#initialize database -- for dev only 
 	db.drop_all()
 	db.create_all()
+
+	#Roles 
+	admin = Role(name='Admin')
+	editor = Role(name='Editor')
+	#users
+	user = User(username="laurin", 
+		password=user_manager.hash_password("Hellothere3"),
+		first_name="Laurin", last_name="Fisher")
+	user.roles.append(admin)
+	db.session.add(user)
+	db.session.commit()
+
+	user = User(username="editor", 
+		password=user_manager.hash_password("helloWorld3"),
+		first_name="Sara", last_name="Rio")
+	user.roles.append(editor)
+	db.session.add(user)
+	db.session.commit()
+
+	#devices 
 	po = paymentoccurence(name="Once")
 	db.session.add(po)
 	db.session.commit()

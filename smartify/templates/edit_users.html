@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block main %}
+<div class="container">
+	<h1> Users </h1>
+	<ul class="list-group">
+	<!-- Home Category -->
+	{% for user in users|sort(attribute='last_name') %}
+		<li class="list-group-item">
+	    	{{user.last_name}}, {{user.first_name}}
+			<div class="float-right">
+				{% for role in roles %}
+					<div class="form-check form-check-inline">
+					  <label class="form-check-label" for="{{user.id}}_{{role}}_checkbox">
+					   	{{role}}
+					  </label>
+					  <input onchange="checkboxChanged('{{user.id}}_{{role}}_checkbox', '{{user.id}}')" class="form-check-input" type="checkbox" name="roles[]" id="{{user.id}}_{{role}}_checkbox"/>
+					</div>
+				{% endfor %}
+				<a href="/deleteUser/{{user.id}}" type="button" class="btn btn-danger">Delete</a>
+			</div>
+	    </li>
+{% endfor %}
+	</ul>
+</div>
+
+<script>
+function checkboxChanged(id, userid){
+	//Post to server 
+	var input = document.getElementById(id); 
+	$.post('/editUser/' + userid, input.checked, function(data, status){
+		console.log("Data: " + data + "\nStatus: " + status); 
+	})
+}
+
+
+window.onload = function(){
+	//load current role values 
+	user_json = {{user_json|tojson|safe}}
+	for(user in user_json){
+		roles = {{roles|safe}}
+		for(role in {{roles|safe}}){
+			var input = document.getElementById(user_json[user].id + "_" + roles[role] + "_checkbox")
+			for(userRole in user_json[user].roles){
+				if(user_json[user].roles[userRole] == roles[role]){
+					input.checked = true; 
+				}
+			}
+			
+		}
+		
+	}
+}
+
+</script>
+
+{% endblock %}
