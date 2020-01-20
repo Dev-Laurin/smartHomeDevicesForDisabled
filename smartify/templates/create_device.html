@@ -20,6 +20,7 @@
 			  {% else %}
 			  	<input type="text" id='name' name="name" class="form-control" required />
 			  {% endif %}
+
 			  <div class="valid-feedback">
 			  	Looks good! 
 			  </div>
@@ -49,6 +50,7 @@
 		    {% else %}
 		    	<textarea class="form-control" name="description" id="description" rows="3" required></textarea>
 		    {% endif %}
+		    <small id="descriptionHelp" class="form-text text-muted">Information about the device itself, similar to the original advertising/description.</small>
 		    <div class="valid-feedback">
 		    	Looks good!
 		    </div> 
@@ -125,6 +127,7 @@
 			    {% else %}
 			    	<textarea class="form-control" name="subscription_description" id="subscription_description" rows="3"></textarea>
 			    {% endif %}
+			    <small id="subscriptionDescriptionHelp" class="form-text text-muted">Provide any additional information about the subscription.</small>
 			    <div class="valid-feedback">
 			    	Looks good!
 			    </div> 
@@ -203,6 +206,7 @@
 		    {% else %}
 		    	<textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
 		    {% endif %}
+		    <small id="ratingDescriptionHelp" class="form-text text-muted">Why is this device given this accessibility rating?</small>
 		</div>
 		<h2>Warranty</h2>
 		<div class="input-group mb-3">
@@ -232,6 +236,7 @@
 			  	Looks good! 
 			  </div>
 			</div>
+			<small id="warrantyLengthHelp" class="form-text text-muted">How long the warranty lasts (3 months, 3 years?)</small>
 		</div> 
 		<h2>Categories</h2>
 		<p>Select all categories that apply</p> 
