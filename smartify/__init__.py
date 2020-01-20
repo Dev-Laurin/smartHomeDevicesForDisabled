@@ -11,7 +11,7 @@ def create_app():
 	#create and configure the app 
 	app = Flask(__name__, instance_relative_config=True, 
 		template_folder="templates", static_folder="static")
-	app.config.from_pyfile('production_config.py') #envvar('APP_CONFIG_FILE')
+	app.config.from_envvar('APP_CONFIG_FILE') #from_pyfile('production_config.py') #
 
 	db.init_app(app)
 	file_upload.init_app(app)	
@@ -26,7 +26,7 @@ def create_app():
 
 	with app.app_context():
 
-		dev_db(user_manager=user_manager)
+	#	dev_db(user_manager=user_manager)
 		
 # #---------------------------------------
 
