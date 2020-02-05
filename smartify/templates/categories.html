@@ -16,6 +16,7 @@
 		  </li>
 		{% endfor %}
 		</ul>
+		{{ form.recaptcha }}
 	</div> 
 	<h2> Add Category </h2>
 	<form class="needs-validation form-inline" action="/addCategory" method="post" novalidate> 
@@ -23,8 +24,34 @@
 		<button type="submit" class="btn btn-primary" onclick="addCategory()">Add</button>
 	</form>
 </div>
-
+<script src="https://www.google.com/recaptcha/api.js?render=_reCAPTCHA_site_key"></script>
 <script>
+
+(function() {
+	  'use strict';
+	  window.addEventListener('load', function() {
+
+		grecaptcha.ready(function() {
+		    grecaptcha.execute('6Lf-49AUAAAAACmYQ_wzrqqjgXYRBq6O9vwLpDPe', {action: 'editHomeCategories'}).then(function(token) {
+		       
+		    });
+		});
+
+		// Fetch all the forms we want to apply custom Bootstrap validation styles to
+	    var forms = document.getElementsByClassName('needs-validation');
+	    // Loop over them and prevent submission
+	    var validation = Array.prototype.filter.call(forms, function(form) {
+	      form.addEventListener('submit', function(event) {
+	        if (form.checkValidity() === false) {
+	          event.preventDefault();
+	          event.stopPropagation();
+	        }
+	        form.classList.add('was-validated');
+	      }, false);
+	    });
+	}, false);
+})();
+
 function makeEditable(name, id){
 	var elem = document.getElementById(name); 
 	elem.innerHTML = '<form action="/editCategory/' + id + '" method="post">' +

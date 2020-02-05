@@ -432,8 +432,10 @@ def deleteHomeCategory(id=None):
 @app.route('/editCategories')
 @roles_required(['Admin', 'Editor'])
 def editCategories():
+	form = AddCategoryForm()
 	deviceCat = devicecategory.query.all()
-	return render_template('categories.html', deviceCat=deviceCat)
+	return render_template('categories.html', deviceCat=deviceCat, 
+		form=form)
 
 @app.route('/editCategory/<id>', methods=["POST"])
 @roles_required(['Admin', 'Editor'])

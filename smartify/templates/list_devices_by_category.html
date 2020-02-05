@@ -4,6 +4,9 @@
 	<br> 
 	<h1>{{category}}</h1> 
 	<br> 
+	{% if devices|length == 0 %}
+		<div class="row">No Devices Found</div>
+	{% endif %}
 	{% set index = namespace(foo=0) %}
 	{% set rows = (devices|length)//3 + 1 %}
 	{% for row in range(rows) %}

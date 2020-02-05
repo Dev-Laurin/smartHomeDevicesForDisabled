@@ -4,7 +4,7 @@
 	<br> 
 	<div class="row">
 		<div class="col"> 
-			<h2>{{device.name}}</h2> 
+			<h1>{{device.name}}</h1> 
 		</div> 
 	</div> 
 	<div class="row">
@@ -19,46 +19,59 @@
         	<div class="row">
         		<div class="col-md-6 col-lg-6">
         			{% if device.narrative %}
-	        			<label><b>Narrative / Use Description</b><br>{{device.narrative}}</label>
-		        		<br> 
+	        			<label for="narrative"><b>Narrative / Use Description</b></label>
+	        			<div id="narrative">{{device.narrative}}
+	        			</div>
 		        	{% endif %}
-	        		<label><b>Price: </b></label>
-		        	${{'%0.2f' % device.price}}
+	        		<label for="price"><b>Price: </b></label>
+		        	<span id="price" name="price">${{'%0.2f' % device.price}}</span>
 		        	<br> 
 		        	{% if device.has_subscription %}
-			        	<label><b>Subscription: </b> 
-				        ${{'%0.2f' % device.recurring_price}} {{device.paymentoccurence}}</label>
-				        <br> 
-				        <label><b>Subscription Description: </b><br>
-				        {{device.subscription_description}}</label>
+			        	<label for="po"><b>Subscription: </b> 
+				        ${{'%0.2f' % device.recurring_price}}
+				        </label>
+				        <div id="po">
+				        	{{device.paymentoccurence}}
+				        </div>
+				        <label for="subscription"><b>Subscription Description: </b>
+				        </label>
+				        <div id="subscription"> 
+				        {{device.subscription_description}}
+				        </div>
 				    {% endif %}
 	        	</div> 
 	        	<div class="col-md-6 col-lg-6">
-        			<label><b> Device Categories: </b></label> 
+        			<label for="dc"><b> Device Categories: </b></label> 
+        			<div id="dc"> 
 			        {% for i in range(device.devicecategories|length) %}
 		        		{{device.devicecategories[i]}}
 		        		{% if i + 1 < (device.devicecategories|length) %}
 		        		, 
 		        		{% endif %}
 		        	{% endfor %}
-			        <br>
+			        </div> 
 			   
-		        	<label><b>Device Rating: </b></label> 
+		        	<label for="rating"><b>Device Rating: </b></label> 
+		        	<div id="rating"> 
 		        	{{device.rating}}
-		        	<br> 
+		        	</div>
 		       
-			        <label><b>Device Description: </b><br>{{device.description}}</label> 
-			        <br> 
-			        <label><b>Link: </b><a target="_blank" href="{{device.link}}">Link to Purchase</a></label>
+			        <label for="description"><b>Device Description: </b></label>
+			        <div id="description">{{device.description}}</div> 
+			        
+			        <label for="link"><b>Link: </b></label> 
+			        <a target="_blank" id="link" href="{{device.link}}">Link to Purchase</a>
 			        {% if device.warranty_price %}
-				        <label><b>Warranty Price: </b></label>
-			        	${{'%0.2f' % device.warranty_price}}
-			        	<br> 
+				        <label for="warranty_price"><b>Warranty Price: </b></label>
+			        	<span id="warranty_price"> 
+			        		${{'%0.2f' % device.warranty_price}}
+			        	</span> 
+
 			        {% endif %}
 			        {% if device.warranty_length %}
-			        	<label><b>Warranty Length: </b></label>
-			        	{{device.warranty_length}}
-			        	<br> 
+			        	<label for="warranty_length"><b>Warranty Length: </b></label>
+			        	<div class="warranty_length"> {{device.warranty_length}}
+			        	</div> 
 			        {% endif %}
 	        	</div> 
         	</div> 
@@ -68,7 +81,7 @@
 	        		<label><b>Additional Resources</b></label><br>
 	        		<ul>
 	        		{% for resource in device.deviceresources %}
-	        			<li><a href="{{resource}}">{{resource}}</a></li>
+	        			<li><a aria-label="{{resource}}" href="{{resource}}">{{resource}}</a></li>
 					{% endfor %}
 					</ul>
 				</div> 
