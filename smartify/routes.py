@@ -53,6 +53,8 @@ def editDevice(id):
 	for h in device.homecategories: 
 		device.hc.append(h.name)
 
+	device.image = file_upload.get_file_url(device, filename="image")
+
 	retFunc = render_template('create_device.html',
 		homecategories=hc, devicecategories=dc, form=form, device=device)
 
