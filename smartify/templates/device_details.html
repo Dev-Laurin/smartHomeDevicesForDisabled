@@ -1,94 +1,111 @@
 {% extends "layout.html" %}
 {% block main %}
 <div class="container"> 
-	<br> 
 	<div class="row">
 		<div class="col"> 
 			<h1>{{device.name}}</h1> 
 		</div> 
 	</div> 
-	<div class="row">
-		<div class="col-md-4">
+	<div class="row mb-3">
+		<div class="col-md-6">
 			{% if device.image %}
 	    		<img src="{{device.image}}" alt="{{device.image_alt or 'No Image'}}" style="width: 100%;">
 	    	{% else %}
 				<svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Image"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
 			{% endif %}
 		</div>
-		<div class="col-md-8">
+		<div class="col-md-6">
         	<div class="row">
-        		<div class="col-md-6 col-lg-6">
-        			{% if device.narrative %}
-	        			<label for="narrative"><b>Narrative / Use Description</b></label>
-	        			<div id="narrative">{{device.narrative}}
-	        			</div>
-		        	{% endif %}
+        		<div class="col">
+    				<!-- Price -->
 	        		<label for="price"><b>Price: </b></label>
 		        	<span id="price" name="price">${{'%0.2f' % device.price}}</span>
+		        	<br> 
+					<!-- Rating -->
+		        	<label for="rating"><b>Device Rating: </b></label> 
+		        	<span id="rating"> 
+		        	{{device.rating}}
+		        	</span>
 		        	<br> 
 		        	{% if device.has_subscription %}
 			        	<label for="po"><b>Subscription: </b> 
 				        ${{'%0.2f' % device.recurring_price}}
 				        </label>
-				        <div id="po">
+				        <span id="po">
 				        	{{device.paymentoccurence}}
-				        </div>
-				        <label for="subscription"><b>Subscription Description: </b>
-				        </label>
-				        <div id="subscription"> 
-				        {{device.subscription_description}}
-				        </div>
+				        </span>
+				        <br> 
 				    {% endif %}
+				    <label for="dc"><b> Device Inputs: </b></label> 
+					<span id="dc"> 
+				        {% for i in range(device.devicecategories|length) %}
+			        		{{device.devicecategories[i]}}
+			        		{% if i + 1 < (device.devicecategories|length) %}
+			        		,
+			        		{% endif %}
+			        	{% endfor %}
+		        	</span>
+		        	<br>  
+	        		<a target="_blank" aria-label="Click this link to purchase at seller's website." id="link" href="{{device.link}}">Click to Purchase</a>
 	        	</div> 
-	        	<div class="col-md-6 col-lg-6">
-        			<label for="dc"><b> Device Categories: </b></label> 
-        			<div id="dc"> 
-			        {% for i in range(device.devicecategories|length) %}
-		        		{{device.devicecategories[i]}}
-		        		{% if i + 1 < (device.devicecategories|length) %}
-		        		, 
-		        		{% endif %}
-		        	{% endfor %}
-			        </div> 
-			   
-		        	<label for="rating"><b>Device Rating: </b></label> 
-		        	<div id="rating"> 
-		        	{{device.rating}}
-		        	</div>
-		       
-			        <label for="description"><b>Device Description: </b></label>
-			        <div id="description">{{device.description}}</div> 
-			        
-			        <label for="link"><b>Link: </b></label> 
-			        <a target="_blank" id="link" href="{{device.link}}">Link to Purchase</a>
-			        {% if device.warranty_price %}
-				        <label for="warranty_price"><b>Warranty Price: </b></label>
-			        	<span id="warranty_price"> 
-			        		${{'%0.2f' % device.warranty_price}}
-			        	</span> 
-
-			        {% endif %}
-			        {% if device.warranty_length %}
-			        	<label for="warranty_length"><b>Warranty Length: </b></label>
-			        	<div class="warranty_length"> {{device.warranty_length}}
-			        	</div> 
-			        {% endif %}
-	        	</div> 
-        	</div> 
-        	{% if device.deviceresources %}
-        	<div class="row">
-        		<div class="col"> 
-	        		<label><b>Additional Resources</b></label><br>
-	        		<ul>
-	        		{% for resource in device.deviceresources %}
-	        			<li><a aria-label="{{resource}}" href="{{resource}}">{{resource}}</a></li>
-					{% endfor %}
-					</ul>
-				</div> 
-        	</div>
+	        </div>
+	    </div>
+	</div>
+    <div class="row mb-3">
+    	<div class="col">
+	    	{% if device.narrative %}
+    			<label for="narrative"><b>Accessibility Rating</b></label>
+    			<div id="narrative">{{device.narrative}}
+    			</div>
         	{% endif %}
-        </div> 
+    	</div>
+    </div>
+	<div class="row mb-3">
+		<div class="col">    
+	        <label for="description"><b>Device Description</b></label>
+	        <div id="description">{{device.description}}</div>
+	    </div>
 	</div> 
+	<div class="row mb-3">
+		<div class="col"> 
+	        <label for="subscription"><b>Subscription Description</b>
+	        </label>
+	        <div id="subscription"> 
+	        {{device.subscription_description}}
+	        </div>
+	    </div>
+	</div>
+	{% if device.warranty_price %}
+	<div class="row mb-3">
+		<div class="col"> 
+	        <label for="warranty_price"><b>Warranty Price: </b></label>
+        	<span id="warranty_price"> 
+        		${{'%0.2f' % device.warranty_price}}
+        	</span> 
+        </div>
+    </div>
+	{% endif %}
+	{% if device.warranty_length %}
+	<div class="row mb-3">
+		<div class="col"> 
+        	<label for="warranty_length"><b>Warranty Length: </b></label>
+        	<div class="warranty_length"> {{device.warranty_length}}
+        	</div> 
+       	</div>
+    </div>
+	{% endif %}
+	{% if device.deviceresources %}
+	<div class="row mb-3">
+		<div class="col"> 
+    		<label><b>Additional Resources</b></label><br>
+    		<ul>
+    		{% for resource in device.deviceresources %}
+    			<li><a aria-label="{{resource}}" href="{{resource}}">{{resource}}</a></li>
+			{% endfor %}
+			</ul>
+		</div>
+	</div>
+    {% endif %}
 </div>
 
 {% endblock %}
