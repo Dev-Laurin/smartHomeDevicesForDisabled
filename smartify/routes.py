@@ -35,6 +35,10 @@ def list():
 	return render_template('list.html', devices=devices, 
 		categories=categories, homecategories=hc)
 
+@app.route('/privacy', methods=["GET"])
+def privacy():
+	return render_template('privacy_policy.html')
+
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
 @roles_required(['Admin', 'Editor'])
 def editDevice(id):

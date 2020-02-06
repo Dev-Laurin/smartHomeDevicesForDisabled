@@ -1,4 +1,48 @@
-privacy policy
+Privacy Policy
+
+Our Do Not Track Policy
+
+Some browsers have a "Do Not Track" feature which allows users to stop monitoring their online behavior by blocking website cookies and beacons. We do not respond to a browser's DNT at this time. At this time we do not use third-party ads or other services to track you except for Google's RECAPTCHA V3 for website moderators publishing data (to prevent robots overloading the site with false entries) and Google Analytics for analyzing our web traffic to better serve you. 
+
+Your California Privacy Rights
+
+California law states consumers have rights to how their information is shared with third parties. Under this law a business must provide information on this sharing and allow consumers to opt in or opt out of this sharing. See the 'Contact Us' section to contact us about this information. 
+
+Under the CCPA you have certain rights as a consumer including: not being discriminated against for using your rights such as charging you more or producing a lesser quality product or service or denying you goods or services, your right to data access and portability, deletion request rights, being informed of when we sell your personal information and opt-out information, and knowing how to use your rights. 
+
+You can contact us (and therefore exercise your rights) with the information in the 'Contact Us' section for questions on information sharing and deletion requests. 
+
+Disclosures of Personal Information for a Business Purpose 
+
+At this time we do not collect or share personal information from anonymous users except for using Google Analytics. We do store the names of our members with accounts but do not share or sell that data except for use of Google's Recaptcha V3 and Google Analytics, whose privacy policies are linked below. 
+
+Sales of Personal Information 
+
+No personal information has been sold in the past 12 months. 
+
+Children's Privacy 
+
+This site is directed towards a general audience and therefore does not knowingly collect a child's (under the age of 13) data. We comply with the Children's Online Privacy Protection Act. If you have concerns please contact us (see 'Contact Us' section). We do not sell anyone's data including children aged 16 or younger. Under CCPA law, children aged 13 to 16 must opt-in to selling their information, while children under 13 must have a guardian opt-in for selling their information. Our site does not sell anyone's data, including unknown minors and therefore complies with CCPA law. 
+
+Data We Collect 
+
+We collect first and last names of account members. 
+
+Data Use 
+
+We use that data for an administer to know who the account belongs to. 
+
+Securing Data 
+
+We secure accounts using encryption and password hashing. 
+
+Third Party Services We Use
+
+We use Google Recaptcha V3 and Google Analytics to gain insight to demographics of our consumers and their activity on our site to improve our service, as well as prevent robot's from flooding our database with unwanted records. Both of these third-party tools' privacy policies are listed below. 
+
+Contact Us 
+
+You may contact ATLA at atla@atlaak.org. You may find more contact information for ATLA at ATLA's main site www.atlaak.org. 
 
 --RECAPTCHA V3 
 
@@ -8,3 +52,6 @@ subject to Google privacy policy and terms of use
 
 
 EU policy - read this - https://www.google.com/about/company/user-consent-policy.html 
+
+--Google Analytics 
+
