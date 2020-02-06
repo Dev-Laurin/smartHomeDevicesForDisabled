@@ -10,7 +10,7 @@
 		  <li class="list-group-item d-flex justify-content-between align-items-center" id="{{c}}">
 		    <img src="{{c.image}}" alt="{{c.image_alt or 'No Image'}}" style="width: 30%;"/> {{c}}
 		    <span class="float-right">
-				<button type="button" class="btn btn-warning" onclick="makeEditable('{{c}}', '{{c.id}}', '{{c.image_alt}}')">Edit</button>
+				<button type="button" class="btn btn-warning" onclick="makeEditable('{{c}}', '{{c.id}}', '{{c.image_alt}}', '{{c.image}}')">Edit</button>
 				<a href="/deleteHomeCategory/{{c.id}}" type="button" class="btn btn-danger">Delete</a>
 			</span>
 		  </li>
@@ -43,15 +43,16 @@
 		    </div>
 		</div>
 		<button type="submit" class="btn btn-primary" onclick="addCategory()">Add</button>
+		{{ form.recaptcha }}
 	</form>
 </div>
 
 <script>
-function makeEditable(name, id, alt_text){
+function makeEditable(name, id, alt_text, image){
 	var elem = document.getElementById(name); 
 	elem.innerHTML = '<form action="/editHomeCategory/' + id + '" method="post" enctype="multipart/form-data">{{ form.csrf_token }}' +
 	 "<input type='text' name='name' value='" + elem.innerText.replace('Edit', '').replace('Delete', '').trim() + "'/><br>" + 
-	'<div class="custom-file"><label class="custom-file-label" for="changeImage" id="changeImageLabel">Category Image</label>' + 
+	'<div class="custom-file"><label class="custom-file-label" for="changeImage" id="changeImageLabel">' + image + '</label>' + 
 	'<input type="file" class="custom-file-input" id="changeImage" name="image"/></div>' + 
 	'<div class="input-group mb-3">' +
 	  '<div class="input-group-prepend">' +
@@ -69,8 +70,7 @@ function makeEditable(name, id, alt_text){
 
 function setEvent(){
 	document.querySelector('.custom-file-input').addEventListener('change', function(e){
-			var filename = this.files[0].name; // document.getElementById('newImage').files[0].name;
-			console.log(filename) 
+			var filename = this.files[0].name; 
 			document.getElementById(this.id + "Label").innerText = filename 
 		})	
 }

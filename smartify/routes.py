@@ -35,6 +35,10 @@ def list():
 	return render_template('list.html', devices=devices, 
 		categories=categories, homecategories=hc)
 
+@app.route('/privacy', methods=["GET"])
+def privacy():
+	return render_template('privacy_policy.html')
+
 @app.route('/createDevice/<id>', methods=["GET", "POST"])
 @roles_required(['Admin', 'Editor'])
 def editDevice(id):
@@ -52,6 +56,8 @@ def editDevice(id):
 	device.hc = []
 	for h in device.homecategories: 
 		device.hc.append(h.name)
+
+	device.image = file_upload.get_file_url(device, filename="image")
 
 	retFunc = render_template('create_device.html',
 		homecategories=hc, devicecategories=dc, form=form, device=device)
@@ -432,8 +438,10 @@ def deleteHomeCategory(id=None):
 @app.route('/editCategories')
 @roles_required(['Admin', 'Editor'])
 def editCategories():
+	form = AddCategoryForm()
 	deviceCat = devicecategory.query.all()
-	return render_template('categories.html', deviceCat=deviceCat)
+	return render_template('categories.html', deviceCat=deviceCat, 
+		form=form)
 
 @app.route('/editCategory/<id>', methods=["POST"])
 @roles_required(['Admin', 'Editor'])

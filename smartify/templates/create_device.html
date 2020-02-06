@@ -20,6 +20,7 @@
 			  {% else %}
 			  	<input type="text" id='name' name="name" class="form-control" required />
 			  {% endif %}
+
 			  <div class="valid-feedback">
 			  	Looks good! 
 			  </div>
@@ -49,6 +50,7 @@
 		    {% else %}
 		    	<textarea class="form-control" name="description" id="description" rows="3" required></textarea>
 		    {% endif %}
+		    <small id="descriptionHelp" class="form-text text-muted">Information about the device itself, similar to the original advertising/description.</small>
 		    <div class="valid-feedback">
 		    	Looks good!
 		    </div> 
@@ -125,6 +127,7 @@
 			    {% else %}
 			    	<textarea class="form-control" name="subscription_description" id="subscription_description" rows="3"></textarea>
 			    {% endif %}
+			    <small id="subscriptionDescriptionHelp" class="form-text text-muted">Provide any additional information about the subscription.</small>
 			    <div class="valid-feedback">
 			    	Looks good!
 			    </div> 
@@ -135,7 +138,14 @@
 		</div>
 		<div class="form-group"> 
 			<div class="custom-file">
-				<label class="custom-file-label" id="deviceImageLabel" for="deviceImage">Device Image</label>
+				<label class="custom-file-label" id="deviceImageLabel" for="deviceImage">
+				{% if 'None' in device.image %}
+					Device Image 
+				{% else %}
+					{{device.image}}
+				{% endif %}
+
+				</label>
 				<input type="file" class="custom-file-input" id="deviceImage" name='image'>
 				<div class="valid-feedback">
 			    	Looks good!
@@ -170,6 +180,7 @@
 		  {% else %}
 		  	<input type="text" name="link" class="form-control" aria-label="Hyperlink to purchase device" id='link' placeholder='https://www.google.com' required>
 		  {% endif %}
+
 		  <div class="valid-feedback">
 		    	Looks good!
 		  </div> 
@@ -177,6 +188,8 @@
 		    Please provide a hyperlink to the device.
 		  </div>
 		</div>
+		<small id="linkHelp" class="form-text text-muted">Must use entire url, including http.</small>
+		<br> 
 		<h2>Rating</h2>
 		<div class="input-group mb-3">
 		  <div class="input-group-prepend">
@@ -203,6 +216,7 @@
 		    {% else %}
 		    	<textarea class="form-control" name="narrative" id="narrative" rows="3"></textarea>
 		    {% endif %}
+		    <small id="ratingDescriptionHelp" class="form-text text-muted">Why is this device given this accessibility rating?</small>
 		</div>
 		<h2>Warranty</h2>
 		<div class="input-group mb-3">
@@ -232,6 +246,7 @@
 			  	Looks good! 
 			  </div>
 			</div>
+			<small id="warrantyLengthHelp" class="form-text text-muted">How long the warranty lasts (3 months, 3 years?)</small>
 		</div> 
 		<h2>Categories</h2>
 		<p>Select all categories that apply</p> 
@@ -265,14 +280,16 @@
 		  	<input type="text" name="newResourceLink" class="form-control" aria-label="Add Resource Link" id='newResourceLink'> 
 		  	<button type="button" onclick="addResource('newResourceLink')" class="btn btn-primary ml-sm-2">Add</button>
 		</div>
+		<small id="linkHelp" class="form-text text-muted">Must use entire url, including http.</small>
 		<br> 
-		<!-- {{ form.recaptcha }} -->
+		{{ form.recaptcha }}
 		<br> 
 		<button type='submit' class="btn btn-primary mb-2">Submit</button> 
 	</form> 
 	<br> 
 </div>
 <script>
+
 	function addResource(id){
 		var resourceDiv = document.getElementById(id); 
 		var text = resourceDiv.value;  
