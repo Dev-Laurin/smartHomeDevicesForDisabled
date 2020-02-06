@@ -22,9 +22,15 @@
 		        	<span id="price" name="price">${{'%0.2f' % device.price}}</span>
 		        	<br> 
 					<!-- Rating -->
+					<label class="sr-only">Device rating is {{device.rating}}. Stars are shown to indicate this.</label>
 		        	<label for="rating"><b>Device Rating: </b></label> 
-		        	<span id="rating"> 
-		        	{{device.rating}}
+		        	<span aria-label="Stars to show rating" id="rating"> 
+		        		{% for i in range(device.rating|int) %}
+		        			<span aria-label="Checked Star" class="fa fa-star star-checked"></span>
+		        		{% endfor %}
+		        		{% for i in range(5 - device.rating|int) %}
+		        			<span aria-label="Unchecked Star" class="fa fa-star"></span>
+		        		{% endfor %}
 		        	</span>
 		        	<br> 
 		        	{% if device.has_subscription %}

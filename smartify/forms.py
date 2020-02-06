@@ -55,25 +55,3 @@ class EditHomeCategoryForm(FlaskForm):
 		message="Alt text needs to be between 1 and 80 characters.")])
 	image_alt = StringField('name', validators=[InputRequired(), Length(1, 80, 
 		message="Alt text needs to be between 1 and 80 characters.")])
-
-# class SignupForm(FlaskForm):
-# 	email = StringField('email', validators=[Length(min=6, 
-# 		message=('Please enter a valid email address.')),
-# 		Email(message=('Please enter a valid email address.')), 
-# 		InputRequired(message=('Please enter a valid email address.'))])
-# 	password = PasswordField('password', 
-# 		validators=[InputRequired(message='Please enter a password.'), 
-# 		Length(min=6, message=('Minimum password length of 6 characters.')), 
-# 		EqualTo('confirm', message='Passwords must match')])
-# 	confirm = PasswordField('confirm')
-# 	submit = SubmitField('register')
-# 	recaptcha = Recaptcha3Field(action="deviceCreation", execute_on_load=True)
-
-
-# class LoginForm(FlaskForm):
-# 	email = StringField('email', 
-# 		validators=[InputRequired('Please enter a valid email address.'),
-# 		Email('Please enter a valid email address.')])
-# 	password = PasswordField('password', validators=[InputRequired('Please enter a password.'), 
-# 		Length(6, 25, 
-# 		message="Password needs to be between 6 and 25 characters.")])

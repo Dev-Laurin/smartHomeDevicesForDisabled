@@ -23,8 +23,16 @@
 			  <div class="card-body">
 			  	<p class="card-title text-AAA-green">{{devices[index.foo].name}}</p>
 			    <p class="card-text text-AAA-green">
-			    	<label><b>Device Rating: </b></label> 
-		        	{{devices[index.foo].rating}}
+			    	<label class="sr-only">Device rating is {{devices[index.foo].rating}}. Stars are shown to indicate this.</label>
+			    	<label for="rating"><b>Device Rating: </b></label> 
+			    	<span id="rating">
+		        	{% for i in range(devices[index.foo].rating|int) %}
+		        			<span aria-label="Checked Star Image" class="fa fa-star star-checked"></span>
+		        		{% endfor %}
+		        		{% for i in range(5 - devices[index.foo].rating|int) %}
+		        			<span aria-label="Unchecked Star Image" class="fa fa-star"></span>
+		        		{% endfor %}
+		        	</span>
 		        	<br> 
 		        	<label><b>Price: </b></label> 
 		        	${{'%0.2f' % devices[index.foo].price}}
